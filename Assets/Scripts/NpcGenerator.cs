@@ -1,0 +1,149 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class NpcGenerator : MonoBehaviour {
+    public enum EquipType
+    {
+        Pawn,
+        Archer,
+        Guardian,
+    }
+	[System.Serializable]
+	public struct NpcGroupInfo{
+		public string name;
+		public Color color;
+		public Transform spawnTr;
+		public Transform destTr;
+		public NpcKind kind;
+		public Npc.NaviLayer naviLayer;
+	}
+	public enum NpcKind{ Red, Blue }
+	private static string[] nameArr=new string[2]{"npcRed","npcBlue"};
+	private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
+    
+    private int m_guiButtonWidth;
+    private int m_guiButtonHeight;
+    private const float GUI_BUTTON_WIDTH_SCREEN_PERCENT = 0.1f;
+    private const float GUI_BUTTON_HEIGHT_SCREEN_PERCENT = 0.033f;
+    private const int GUI_BUTTON_SPACING = 10;
+
+	public int spawnNum;
+	public int liveMax;
+    private const float SPAWN_DELAY_TIME = 0.1f;
+    private float spawnDelay = 0.0f;
+	public GameObject npcPrefab;
+	public NpcGroupInfo[] npcGpInfo;
+
+	private List<GameObject>[] mNpcListArr;
+	private int[] mSpawnCnt;
+	private Npc.EquipType[] mEquipType;
+
+	// Use this for initialization
+	void Start () {
+		if (spawnNum <= 0) { spawnNum = 1; }
+		if (liveMax <= 10) { liveMax = 10; }
+
+		mNpcListArr = new List<GameObject>[nameArr.Length];
+		mSpawnCnt = new int[nameArr.Length];
+		mEquipType = new Npc.EquipType[nameArr.Length];
+		for (int ii = 0; ii < nameArr.Length; ++ii) {
+			mNpcListArr [ii] = new List<GameObject>();
+			mSpawnCnt[ii] = spawnNum;
+			mEquipType[ii] = Npc.EquipType.Trooper;
+		}
+
+        m_guiButtonWidth = System.Convert.ToInt32(Screen.width * GUI_BUTTON_WIDTH_SCREEN_PERCENT);
+        m_guiButtonHeight = System.Convert.ToInt32(Screen.width * GUI_BUTTON_HEIGHT_SCREEN_PERCENT);
+	}
+	
+	// Update is called once per frame
+	void Update () {
+
+        if (spawnDelay >= SPAWN_DELAY_TIME)
+        {
+            //if (Random.value < 0.1f) {
+            for (int ii = 0; ii < nameArr.Length; ++ii)
+            {
+                if (mSpawnCnt[ii] > 0)
+                {
+                    mSpawnCnt[ii]--;
+                    spawnNpc(npcGpInfo[ii].kind, mEquipType[ii]);
+                }
+            }
+            //}
+            spawnDelay = 0;
+        }
+        else
+        {
+            spawnDelay += Time.deltaTime;
+        }
+
+		GameObject[] gos = GameObject.FindGameObjectsWithTag ("tagNpc");
+		for (int ii = 0; ii < nameArr.Length; ++ii) { mNpcListArr [ii].Clear (); }
+		foreach (GameObject go in gos) {
+			for (int ii = 0; ii < nameArr.Length; ++ii) {
+				if(go.name==nameArr [ii]){
+					mNpcListArr[ii].Add(go);
+				}
+			}
+		}
+	}
+
+	private void OnGUI()
+    {
+		for (int ii = 0; ii < nameArr.Length; ++ii)
+        {
+			/*if(mSpawnCnt[ii]<=0)
+            {
+				if(mNpcListArr[ii].Count < liveMax)
+                {*/
+                    if (GUI.RepeatButton(new Rect(ii * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
+                    {
+						mEquipType[ii]=Npc.EquipType.Trooper;
+						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
+					}
+                    else if (GUI.RepeatButton(new Rect(ii * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight + GUI_BUTTON_SPACING * 1.5f, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[1, ii]))
+                    {
+						mEquipType[ii]=Npc.EquipType.Archer;
+						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
+					}
+                    else if (GUI.RepeatButton(new Rect(ii * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
+                    {
+						mEquipType[ii]=Npc.EquipType.Guardian;
+						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
+					}
+				//}
+			//}
+		}
+	}
+
+	public List<GameObject> GetEnemyListByMyName(string _myName){
+		List<GameObject> retArr = new List<GameObject>();
+		for(int ii = 0; ii < nameArr.Length; ++ii){
+			if(_myName!=nameArr[ii]){
+				retArr.AddRange(mNpcListArr[ii]);
+			}
+		}
+		return retArr;
+	}
+
+
+	private void spawnNpc(NpcKind _kind, Npc.EquipType _equipType){
+		int id = (_kind == NpcKind.Red) ? 0 : 1;
+		GameObject npc = GameObject.Instantiate (npcPrefab) as GameObject;
+		npc.name = nameArr [id];
+		npc.transform.position = npcGpInfo[id].spawnTr.position + Vector3.up * 0.5f;
+        npc.SendMessage("SM_initializeNpcSprite");
+		npc.SendMessage ("SM_setGenerator", gameObject);
+		npc.SendMessage ("SM_addNaviLayer", (int)npcGpInfo[id].naviLayer);
+		npc.SendMessage ("SM_setDest", npcGpInfo[id].destTr);
+		npc.SendMessage ("SM_setEquipType", _equipType);
+        npc.SendMessage("SM_setIsEnemy", (_kind != NpcKind.Red));
+        //npc.SendMessage("SM_setColor", npcGpInfo [id].color);
+
+		if (Random.value < 0.5f) {
+			npc.SendMessage ("SM_addNaviLayer",Npc.NaviLayer_layerHill);
+		}
+	}
+}
