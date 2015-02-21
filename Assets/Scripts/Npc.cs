@@ -7,6 +7,8 @@ public class Npc : MonoBehaviour {
 		Trooper,
 		Archer,
 		Guardian,
+        Trooper2,
+        Trooper3,
 	}
 	public enum NaviLayer{
 		BrigeRed =  (1 << 6),
@@ -57,27 +59,38 @@ public class Npc : MonoBehaviour {
 		}
 		//-------------------------
 
-		switch(mEquipType){
-		default:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case EquipType.Trooper:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-            this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
-			break;
-		case EquipType.Archer:
-			mCkDistMin = 4f;
-			mCkDistMax = 6f;
-            this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
-			break;
-		case EquipType.Guardian:
-			mCkDistMin = 0f;
-			mCkDistMax = 0.5f;
-            this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
-			break;
-		}
+        switch (mEquipType)
+        {
+            default:
+                mCkDistMin = 0f;
+                mCkDistMax = 2.0f;
+                break;
+            case EquipType.Trooper:
+                mCkDistMin = 0f;
+                mCkDistMax = 2.0f;
+                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
+                break;
+            case EquipType.Archer:
+                mCkDistMin = 4f;
+                mCkDistMax = 6f;
+                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
+                break;
+            case EquipType.Guardian:
+                mCkDistMin = 0f;
+                mCkDistMax = 0.5f;
+                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
+                break;
+            case EquipType.Trooper2:
+                mCkDistMin = 0f;
+                mCkDistMax = 2.0f;
+                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[4];
+                break;
+            case EquipType.Trooper3:
+                mCkDistMin = 0f;
+                mCkDistMax = 2.0f;
+                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[5];
+                break;
+        }
 
 		mDefSpeed = mAg.speed;
 		if (mAg.pathStatus != NavMeshPathStatus.PathInvalid) {

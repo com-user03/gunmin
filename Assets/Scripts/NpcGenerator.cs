@@ -39,6 +39,10 @@ public class NpcGenerator : MonoBehaviour {
 	private int[] mSpawnCnt;
 	private Npc.EquipType[] mEquipType;
 
+    private bool m_isButtonHeld;
+    private Npc.EquipType m_npcToSpawn;
+    private int m_npcToSpawnTeamIndex;
+
 	// Use this for initialization
 	void Start () {
 		if (spawnNum <= 0) { spawnNum = 1; }
@@ -59,6 +63,11 @@ public class NpcGenerator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (m_isButtonHeld)
+        {
+            PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex);
+        }
 
         if (spawnDelay >= SPAWN_DELAY_TIME)
         {
@@ -92,23 +101,23 @@ public class NpcGenerator : MonoBehaviour {
 
 	private void OnGUI()
     {
-		for (int ii = 0; ii < nameArr.Length; ++ii)
+		for (int ii = 1; ii < nameArr.Length; ++ii)
         {
 			/*if(mSpawnCnt[ii]<=0)
             {
-				if(mNpcListArr[ii].Count < liveMax)
+				//if(mNpcListArr[ii].Count < liveMax)
                 {*/
-                    if (GUI.RepeatButton(new Rect(ii * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
+                    if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
                     {
 						mEquipType[ii]=Npc.EquipType.Trooper;
 						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
 					}
-                    else if (GUI.RepeatButton(new Rect(ii * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight + GUI_BUTTON_SPACING * 1.5f, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[1, ii]))
+                    else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight + GUI_BUTTON_SPACING * 1.5f, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[1, ii]))
                     {
 						mEquipType[ii]=Npc.EquipType.Archer;
 						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
 					}
-                    else if (GUI.RepeatButton(new Rect(ii * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
+                    else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
                     {
 						mEquipType[ii]=Npc.EquipType.Guardian;
 						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
@@ -117,6 +126,52 @@ public class NpcGenerator : MonoBehaviour {
 			//}
 		}
 	}
+
+    private void PrepareNpc(Npc.EquipType npcType, int teamIndex)
+    {
+        mEquipType[teamIndex] = npcType;
+        mSpawnCnt[teamIndex] = Mathf.Min(spawnNum, liveMax - mNpcListArr[teamIndex].Count);
+    }
+
+    public void Button1Pressed()
+    {
+        m_isButtonHeld = true;
+        m_npcToSpawn = Npc.EquipType.Trooper;
+        m_npcToSpawnTeamIndex = 0;
+    }
+
+    public void Button2Pressed()
+    {
+        m_isButtonHeld = true;
+        m_npcToSpawn = Npc.EquipType.Archer;
+        m_npcToSpawnTeamIndex = 0;
+    }
+
+    public void Button3Pressed()
+    {
+        m_isButtonHeld = true;
+        m_npcToSpawn = Npc.EquipType.Guardian;
+        m_npcToSpawnTeamIndex = 0;
+    }
+
+    public void Button4Pressed()
+    {
+        m_isButtonHeld = true;
+        m_npcToSpawn = Npc.EquipType.Trooper2;
+        m_npcToSpawnTeamIndex = 0;
+    }
+
+    public void Button5Pressed()
+    {
+        m_isButtonHeld = true;
+        m_npcToSpawn = Npc.EquipType.Trooper3;
+        m_npcToSpawnTeamIndex = 0;
+    }
+
+    public void ButtonReleased()
+    {
+        m_isButtonHeld = false;
+    }
 
 	public List<GameObject> GetEnemyListByMyName(string _myName){
 		List<GameObject> retArr = new List<GameObject>();

@@ -3,8 +3,8 @@ guid: 7b313b0172d7ff7458e332897d9d8466
 TextureImporter:
   fileIDToRecycleName:
     21300000: gunmin_01
-    21300002: gunmin_01_back
-    21300004: gunmin_02
+    21300002: gunmin_02
+    21300004: gunmin_03
     21300006: gunmin_04
     21300008: gunmin_05
     21300010: gunmin_06
@@ -61,7 +61,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: gunmin_01_back
+    - name: gunmin_02
       rect:
         serializedVersion: 2
         x: 64
@@ -71,7 +71,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: gunmin_02
+    - name: gunmin_03
       rect:
         serializedVersion: 2
         x: 128
