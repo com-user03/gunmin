@@ -15,6 +15,7 @@ public class NpcSpriteController : MonoBehaviour {
 
     void RemoveMe()
     {
+		this.transform.parent.SendMessage ("SM_removeMe");
         Destroy(this.transform.parent.gameObject);
     }
 

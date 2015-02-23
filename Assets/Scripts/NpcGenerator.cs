@@ -90,16 +90,6 @@ public class NpcGenerator : MonoBehaviour {
         {
             spawnDelay += Time.deltaTime;
         }
-
-		GameObject[] gos = GameObject.FindGameObjectsWithTag ("tagNpc");
-		for (int ii = 0; ii < nameArr.Length; ++ii) { mNpcListArr [ii].Clear (); }
-		foreach (GameObject go in gos) {
-			for (int ii = 0; ii < nameArr.Length; ++ii) {
-				if(go.name==nameArr [ii]){
-					mNpcListArr[ii].Add(go);
-				}
-			}
-		}
 	}
 
 	private void OnGUI()
@@ -197,8 +187,25 @@ public class NpcGenerator : MonoBehaviour {
         npc.SendMessage("SM_setIsEnemy", (_kind != NpcKind.Red));
         //npc.SendMessage("SM_setColor", npcGpInfo [id].color);
 
+		// add to list
+		mNpcListArr[id].Add(npc);
+
 		if (Random.value < 0.5f) {
 			npc.SendMessage ("SM_addNaviLayer",Npc.NaviLayer_layerHill);
+		}
+	}
+
+	//--------------------
+	private void SM_removeNpc(GameObject _npcObj){
+		for (int ii = 0; ii < nameArr.Length; ++ii) {
+			if(_npcObj.name==nameArr[ii]){
+				for(int jj = 0; jj < mNpcListArr[ii].Count; ++jj){
+					if(mNpcListArr[ii][jj]==_npcObj){
+						mNpcListArr[ii].Remove(mNpcListArr[ii][jj]);
+						break;
+					}
+				}
+			}
 		}
 	}
 }

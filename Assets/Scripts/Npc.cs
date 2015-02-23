@@ -246,4 +246,8 @@ public class Npc : MonoBehaviour {
     {
         m_npcSpriteObject.renderer.material.color = color;
     }
+
+	private void SM_removeMe(){
+		mGenScr.gameObject.SendMessage ("SM_removeNpc", this.gameObject);
+	}
 }
