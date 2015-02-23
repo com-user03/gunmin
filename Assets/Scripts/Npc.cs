@@ -68,17 +68,17 @@ public class Npc : MonoBehaviour {
             case EquipType.Trooper:
                 mCkDistMin = 0f;
                 mCkDistMax = 2.0f;
-                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
+                m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
                 break;
             case EquipType.Archer:
                 mCkDistMin = 4f;
                 mCkDistMax = 6f;
-                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
+                m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
                 break;
             case EquipType.Guardian:
                 mCkDistMin = 0f;
                 mCkDistMax = 0.5f;
-                this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
+                m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
                 break;
             case EquipType.Trooper2:
                 mCkDistMin = 0f;
@@ -91,6 +91,8 @@ public class Npc : MonoBehaviour {
                 this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[5];
                 break;
         }
+
+        m_npcSpriteObject.transform.position = this.transform.position;
 
 		mDefSpeed = mAg.speed;
 		if (mAg.pathStatus != NavMeshPathStatus.PathInvalid) {
@@ -134,24 +136,27 @@ public class Npc : MonoBehaviour {
             }
 			if(mTempDestTr!=null){
 				if ((transform.position - mTempDestTr.position).magnitude < 0.2f) {
-                    UnitRemovedEvent();
-					Destroy(gameObject);
+                        KillMe();
 					return;
 				}
+                else if ((transform.position - mTempDestTr.position).magnitude < 0.5f)
+                {
+                    m_npcSpriteObject.GetComponent<Animator>().SetBool("IsHit", true);
+                }
 			}
 		}
 
 		if (mTempDestTr != null) {
 			mAg.CalculatePath (mTempDestTr.position, mAg.path);
-			Vector3 nowPos = transform.position; //mAg.updatePosition;
+			/*Vector3 nowPos = transform.position; //mAg.updatePosition;
 			Vector3 nextPos = nowPos + (mAg.nextPosition - nowPos) * 1000f;
-			Debug.DrawLine (nowPos, nextPos, Color.red);
+			Debug.DrawLine (nowPos, nextPos, Color.red);*/
 		}
 
         //カメラに向かう
         Vector3 lookAtPos = this.transform.position + m_mainCamera.transform.rotation * Vector3.forward;
         lookAtPos.y = 0;
-        m_npcSpriteObject.transform.LookAt(lookAtPos, Vector3.up);
+        this.transform.LookAt(lookAtPos, Vector3.up);
 	}
 
 	void OnGUI(){
@@ -159,6 +164,15 @@ public class Npc : MonoBehaviour {
 
 	void OnCollisionEnter(Collision _colli){
 	}
+
+    public void KillMe()
+    {
+        if (m_npcSpriteObject)
+        {
+            UnitRemovedEvent();
+            m_npcSpriteObject.GetComponent<Animator>().SetBool("IsDead", true);
+        }
+    }
 
 	private Transform getNearestEm (Vector3 _pos, float _minDist, float _maxDist){
 		Transform retTr = null;
@@ -205,7 +219,7 @@ public class Npc : MonoBehaviour {
 	//--------------
     private void SM_initializeNpcSprite()
     {
-        m_npcSpriteObject = Instantiate(NpcSpriteObject, this.transform.position, Quaternion.identity) as GameObject;
+        m_npcSpriteObject = Instantiate(NpcSpriteObject) as GameObject;
         m_npcSpriteObject.transform.localScale = this.transform.localScale;
         m_npcSpriteObject.transform.parent = this.gameObject.transform;
     }

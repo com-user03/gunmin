@@ -58,8 +58,8 @@ TextureImporter:
         y: 128
         width: 64
         height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .375055701, y: .0403838158}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_02
       rect:
@@ -68,8 +68,8 @@ TextureImporter:
         y: 128
         width: 64
         height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .321508288, y: .0403838158}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_03
       rect:
@@ -78,8 +78,8 @@ TextureImporter:
         y: 128
         width: 64
         height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .553547382, y: .0582330227}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_04
       rect:
@@ -88,8 +88,8 @@ TextureImporter:
         y: 128
         width: 64
         height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .339357376, y: .0403838158}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_05
       rect:
@@ -98,8 +98,8 @@ TextureImporter:
         y: 0
         width: 64
         height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .294734418, y: .0403837636}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_06
       rect:
@@ -108,8 +108,8 @@ TextureImporter:
         y: 0
         width: 64
         height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      alignment: 9
+      pivot: {x: .312583685, y: .0493083484}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

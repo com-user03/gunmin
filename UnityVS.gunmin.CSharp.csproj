@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\Arrow.cs" />
     <Compile Include="Assets\Scripts\Npc.cs" />
     <Compile Include="Assets\Scripts\NpcGenerator.cs" />
+    <Compile Include="Assets\Scripts\NpcSpriteController.cs" />
     <Compile Include="Assets\Scripts\_lib\TmMath.cs" />
     <Compile Include="Assets\Scripts\myCam.cs" />
   </ItemGroup>
