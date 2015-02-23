@@ -50,6 +50,6 @@ public class InfoManager : MonoBehaviour {
     private void UnitRemoved()
     {
         numUnitsOnScreen--;
-        NumUnitsTextObj.GetComponent<Text>().text = NUM_UNITS_TEXT + numUnitsOnScreen;
+        NumUnitsTextObj.GetComponent<Text>().text = NUM_UNITS_TEXT + Mathf.Max(numUnitsOnScreen, 0);
     }
 }

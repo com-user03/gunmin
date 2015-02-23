@@ -67,6 +67,9 @@ public class NpcGenerator : MonoBehaviour {
         if (m_isButtonHeld)
         {
             PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex);
+
+            // （仮）CPUチームのユニットを作る
+            PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex + 1);
         }
 
         if (spawnDelay >= SPAWN_DELAY_TIME)
@@ -107,21 +110,18 @@ public class NpcGenerator : MonoBehaviour {
             {
 				//if(mNpcListArr[ii].Count < liveMax)
                 {*/
-                    if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
+                    /*if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
                     {
-						mEquipType[ii]=Npc.EquipType.Trooper;
-						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
+                        PrepareNpc(Npc.EquipType.Trooper, ii);
 					}
                     else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight + GUI_BUTTON_SPACING * 1.5f, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[1, ii]))
                     {
-						mEquipType[ii]=Npc.EquipType.Archer;
-						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
+                        PrepareNpc(Npc.EquipType.Archer, ii);
 					}
                     else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
                     {
-						mEquipType[ii]=Npc.EquipType.Guardian;
-						mSpawnCnt[ii] = Mathf.Min(spawnNum,liveMax-mNpcListArr[ii].Count);
-					}
+                        PrepareNpc(Npc.EquipType.Guardian, ii);
+					}*/
 				//}
 			//}
 		}
