@@ -3,13 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Npc : MonoBehaviour {
-	public enum EquipType{
-		Trooper,
-		Archer,
-		Guardian,
-        Trooper2,
-        Trooper3,
-	}
 	public enum NaviLayer{
 		BrigeRed =  (1 << 6),
 		BrigeBlue = (1 << 7),
@@ -22,7 +15,7 @@ public class Npc : MonoBehaviour {
 	public Transform destTr;
 	private Transform mTempDestTr;
 	private float mDefSpeed;
-	private EquipType mEquipType;
+	private NpcGenerator.EquipType mEquipType;
 	private NpcGenerator mGenScr;
 	private float mCkDistMin,mCkDistMax;
 
@@ -53,9 +46,9 @@ public class Npc : MonoBehaviour {
 		mDefSpeed = mAg.speed;
 		switch(mEquipType){
 		default:                 break;
-		case EquipType.Trooper:  mAg.speed = mDefSpeed * 1.3f;  break;
-		case EquipType.Archer:   mAg.speed = mDefSpeed * 1.0f;  break;
-		case EquipType.Guardian: mAg.speed = mDefSpeed * 0.7f;  break;
+		case  NpcGenerator.EquipType.Trooper:  mAg.speed = mDefSpeed * 1.3f;  break;
+		case  NpcGenerator.EquipType.Archer:   mAg.speed = mDefSpeed * 1.0f;  break;
+		case  NpcGenerator.EquipType.Guardian: mAg.speed = mDefSpeed * 0.7f;  break;
 		}
 		//-------------------------
 
@@ -65,27 +58,27 @@ public class Npc : MonoBehaviour {
                 mCkDistMin = 0f;
                 mCkDistMax = 2.0f;
                 break;
-            case EquipType.Trooper:
+            case  NpcGenerator.EquipType.Trooper:
                 mCkDistMin = 0f;
                 mCkDistMax = 2.0f;
                 m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
                 break;
-            case EquipType.Archer:
+            case  NpcGenerator.EquipType.Archer:
                 mCkDistMin = 4f;
                 mCkDistMax = 6f;
                 m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
                 break;
-            case EquipType.Guardian:
+            case  NpcGenerator.EquipType.Guardian:
                 mCkDistMin = 0f;
                 mCkDistMax = 0.5f;
                 m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
                 break;
-            case EquipType.Trooper2:
+            case  NpcGenerator.EquipType.Trooper2:
                 mCkDistMin = 0f;
                 mCkDistMax = 2.0f;
                 this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[4];
                 break;
-            case EquipType.Trooper3:
+            case  NpcGenerator.EquipType.Trooper3:
                 mCkDistMin = 0f;
                 mCkDistMax = 2.0f;
                 this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[5];
@@ -115,16 +108,16 @@ public class Npc : MonoBehaviour {
 				default:
 					mAg.SetDestination (mTempDestTr.position);
 					break;
-				case EquipType.Trooper:
+				case  NpcGenerator.EquipType.Trooper:
 					mAg.SetDestination (mTempDestTr.position);
 					break;
-				case EquipType.Archer:
+				case  NpcGenerator.EquipType.Archer:
 					mAg.SetDestination (transform.position);
 					if (Random.value < 0.2f) {
 						setArrow(mTempDestTr);
 					}
 					break;
-				case EquipType.Guardian:
+				case  NpcGenerator.EquipType.Guardian:
 					mAg.SetDestination (mTempDestTr.position);
 					break;
 				}
@@ -229,7 +222,7 @@ public class Npc : MonoBehaviour {
 	private void SM_addNaviLayer(int _layer){
 		mAg.walkableMask |= _layer;
 	}
-	private void SM_setEquipType(EquipType _equipType){
+	private void SM_setEquipType( NpcGenerator.EquipType _equipType){
 		mEquipType = _equipType;
 		//Debug.Log("mEquipType="+mEquipType.ToString());
 	}

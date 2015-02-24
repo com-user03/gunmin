@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class NpcGenerator : MonoBehaviour {
-    public enum EquipType
-    {
-        Pawn,
-        Archer,
-        Guardian,
-    }
+	public enum EquipType{
+		Trooper,
+		Archer,
+		Guardian,
+		Trooper2,
+		Trooper3,
+	}
 	[System.Serializable]
 	public struct NpcGroupInfo{
 		public string name;
@@ -37,10 +38,10 @@ public class NpcGenerator : MonoBehaviour {
 
 	private List<GameObject>[] mNpcListArr;
 	private int[] mSpawnCnt;
-	private Npc.EquipType[] mEquipType;
+	private EquipType[] mEquipType;
 
     private bool m_isButtonHeld;
-    private Npc.EquipType m_npcToSpawn;
+    private EquipType m_npcToSpawn;
     private int m_npcToSpawnTeamIndex;
 
 	// Use this for initialization
@@ -50,11 +51,11 @@ public class NpcGenerator : MonoBehaviour {
 
 		mNpcListArr = new List<GameObject>[nameArr.Length];
 		mSpawnCnt = new int[nameArr.Length];
-		mEquipType = new Npc.EquipType[nameArr.Length];
+		mEquipType = new EquipType[nameArr.Length];
 		for (int ii = 0; ii < nameArr.Length; ++ii) {
 			mNpcListArr [ii] = new List<GameObject>();
 			mSpawnCnt[ii] = spawnNum;
-			mEquipType[ii] = Npc.EquipType.Trooper;
+			mEquipType[ii] = EquipType.Trooper;
 		}
 
         //m_guiButtonWidth = System.Convert.ToInt32(Screen.width * GUI_BUTTON_WIDTH_SCREEN_PERCENT);
@@ -102,22 +103,22 @@ public class NpcGenerator : MonoBehaviour {
                 {
                     if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
                     {
-                        PrepareNpc(Npc.EquipType.Trooper, ii);
+                        PrepareNpc(EquipType.Trooper, ii);
 					}
                     else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight + GUI_BUTTON_SPACING * 1.5f, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[1, ii]))
                     {
-                        PrepareNpc(Npc.EquipType.Archer, ii);
+                        PrepareNpc(EquipType.Archer, ii);
 					}
                     else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
                     {
-                        PrepareNpc(Npc.EquipType.Guardian, ii);
+                        PrepareNpc(EquipType.Guardian, ii);
 					}
 				//}
 			//}
 		}
 	}*/
 
-    private void PrepareNpc(Npc.EquipType npcType, int teamIndex)
+    private void PrepareNpc(EquipType npcType, int teamIndex)
     {
         mEquipType[teamIndex] = npcType;
         mSpawnCnt[teamIndex] = Mathf.Min(spawnNum, liveMax - mNpcListArr[teamIndex].Count);
@@ -126,35 +127,35 @@ public class NpcGenerator : MonoBehaviour {
     public void Button1Pressed()
     {
         m_isButtonHeld = true;
-        m_npcToSpawn = Npc.EquipType.Trooper;
+        m_npcToSpawn = EquipType.Trooper;
         m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button2Pressed()
     {
         m_isButtonHeld = true;
-        m_npcToSpawn = Npc.EquipType.Archer;
+        m_npcToSpawn = EquipType.Archer;
         m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button3Pressed()
     {
         m_isButtonHeld = true;
-        m_npcToSpawn = Npc.EquipType.Guardian;
+        m_npcToSpawn = EquipType.Guardian;
         m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button4Pressed()
     {
         m_isButtonHeld = true;
-        m_npcToSpawn = Npc.EquipType.Trooper2;
+        m_npcToSpawn = EquipType.Trooper2;
         m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button5Pressed()
     {
         m_isButtonHeld = true;
-        m_npcToSpawn = Npc.EquipType.Trooper3;
+        m_npcToSpawn = EquipType.Trooper3;
         m_npcToSpawnTeamIndex = 0;
     }
 
@@ -174,7 +175,7 @@ public class NpcGenerator : MonoBehaviour {
 	}
 
 
-	private void spawnNpc(NpcKind _kind, Npc.EquipType _equipType){
+	private void spawnNpc(NpcKind _kind, EquipType _equipType){
 		int id = (_kind == NpcKind.Red) ? 0 : 1;
 		GameObject npc = GameObject.Instantiate (npcPrefab) as GameObject;
 		npc.name = nameArr [id];
