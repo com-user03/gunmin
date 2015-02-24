@@ -3,13 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Npc : MonoBehaviour {
-	public enum NaviLayer{
-		BrigeRed =  (1 << 6),
-		BrigeBlue = (1 << 7),
-	}
-	private const int NaviLayer_layerBrigeRed = (1 << 6);
-	private const int NaviLayer_layerBrigeBlue = (1 << 7);
-	public const int NaviLayer_layerHill = (1 << 8);
 	private NavMeshAgent mAg;
 	public GameObject arrowPrefab;
 	public Transform destTr;

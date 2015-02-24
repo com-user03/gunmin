@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class NpcGenerator : MonoBehaviour {
+	public enum NaviLayer{
+		BrigeRed =  (1 << 6),
+		BrigeBlue = (1 << 7),
+	}
 	public enum EquipType{
 		Trooper,
 		Archer,
@@ -17,7 +21,7 @@ public class NpcGenerator : MonoBehaviour {
 		public Transform spawnTr;
 		public Transform destTr;
 		public NpcKind kind;
-		public Npc.NaviLayer naviLayer;
+		public NaviLayer naviLayer;
 	}
 	public enum NpcKind{ Red, Blue }
 	private static string[] nameArr=new string[2]{"npcRed","npcBlue"};
@@ -192,7 +196,8 @@ public class NpcGenerator : MonoBehaviour {
 		mNpcListArr[id].Add(npc);
 
 		if (Random.value < 0.5f) {
-			npc.SendMessage ("SM_addNaviLayer",Npc.NaviLayer_layerHill);
+			int layerHillMask = NavMesh.GetNavMeshLayerFromName("layerHill");
+			npc.SendMessage ("SM_addNaviLayer",(1<<layerHillMask));
 		}
 	}
 
