@@ -20,13 +20,13 @@ public class NpcGenerator : MonoBehaviour {
 	}
 	public enum NpcKind{ Red, Blue }
 	private static string[] nameArr=new string[2]{"npcRed","npcBlue"};
-	private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
+	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
     
-    private int m_guiButtonWidth;
-    private int m_guiButtonHeight;
-    private const float GUI_BUTTON_WIDTH_SCREEN_PERCENT = 0.1f;
-    private const float GUI_BUTTON_HEIGHT_SCREEN_PERCENT = 0.033f;
-    private const int GUI_BUTTON_SPACING = 10;
+    //private int m_guiButtonWidth;
+    //private int m_guiButtonHeight;
+    //private const float GUI_BUTTON_WIDTH_SCREEN_PERCENT = 0.1f;
+    //private const float GUI_BUTTON_HEIGHT_SCREEN_PERCENT = 0.033f;
+    //private const int GUI_BUTTON_SPACING = 10;
 
 	public int spawnNum;
 	public int liveMax;
@@ -57,8 +57,8 @@ public class NpcGenerator : MonoBehaviour {
 			mEquipType[ii] = Npc.EquipType.Trooper;
 		}
 
-        m_guiButtonWidth = System.Convert.ToInt32(Screen.width * GUI_BUTTON_WIDTH_SCREEN_PERCENT);
-        m_guiButtonHeight = System.Convert.ToInt32(Screen.width * GUI_BUTTON_HEIGHT_SCREEN_PERCENT);
+        //m_guiButtonWidth = System.Convert.ToInt32(Screen.width * GUI_BUTTON_WIDTH_SCREEN_PERCENT);
+        //m_guiButtonHeight = System.Convert.ToInt32(Screen.width * GUI_BUTTON_HEIGHT_SCREEN_PERCENT);
 	}
 	
 	// Update is called once per frame
@@ -92,15 +92,15 @@ public class NpcGenerator : MonoBehaviour {
         }
 	}
 
-	private void OnGUI()
+	/*private void OnGUI()
     {
 		for (int ii = 1; ii < nameArr.Length; ++ii)
         {
-			/*if(mSpawnCnt[ii]<=0)
+			if(mSpawnCnt[ii]<=0)
             {
 				//if(mNpcListArr[ii].Count < liveMax)
-                {*/
-                    /*if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
+                {
+                    if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
                     {
                         PrepareNpc(Npc.EquipType.Trooper, ii);
 					}
@@ -111,11 +111,11 @@ public class NpcGenerator : MonoBehaviour {
                     else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
                     {
                         PrepareNpc(Npc.EquipType.Guardian, ii);
-					}*/
+					}
 				//}
 			//}
 		}
-	}
+	}*/
 
     private void PrepareNpc(Npc.EquipType npcType, int teamIndex)
     {

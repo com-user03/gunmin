@@ -161,17 +161,10 @@ public class Npc : MonoBehaviour {
         this.transform.LookAt(lookAtPos, Vector3.up);
 	}
 
-//	void OnGUI(){
-//	}
-
-	void OnCollisionEnter(Collision _colli){
-	}
-
     public void KillMe()
     {
         if (m_npcSpriteObject)
         {
-            UnitRemovedEvent();
             m_npcSpriteObject.GetComponent<Animator>().SetBool("IsDead", true);
         }
     }
@@ -249,7 +242,9 @@ public class Npc : MonoBehaviour {
         m_npcSpriteObject.renderer.material.color = color;
     }
 
-	private void SM_removeMe(){
+	private void SM_removeMe()
+    {
+        UnitRemovedEvent();
 		mGenScr.gameObject.SendMessage ("SM_removeNpc", this.gameObject);
 	}
 }
