@@ -145,13 +145,15 @@ public class Npc : MonoBehaviour {
                 }
 			}
 		}
-
-		if (mTempDestTr != null) {
-			mAg.CalculatePath (mTempDestTr.position, mAg.path);
-			/*Vector3 nowPos = transform.position; //mAg.updatePosition;
+		if (Random.value < 0.05f) { // 再検索頻度を下げる 
+			if (mTempDestTr != null) {
+				mAg.CalculatePath (mTempDestTr.position, mAg.path);
+				/*Vector3 nowPos = transform.position; //mAg.updatePosition;
 			Vector3 nextPos = nowPos + (mAg.nextPosition - nowPos) * 1000f;
 			Debug.DrawLine (nowPos, nextPos, Color.red);*/
+			}
 		}
+		
 
         //カメラに向かう
         Vector3 lookAtPos = this.transform.position + m_mainCamera.transform.rotation * Vector3.forward;
@@ -159,8 +161,8 @@ public class Npc : MonoBehaviour {
         this.transform.LookAt(lookAtPos, Vector3.up);
 	}
 
-	void OnGUI(){
-	}
+//	void OnGUI(){
+//	}
 
 	void OnCollisionEnter(Collision _colli){
 	}
