@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\Arrow.cs" />
     <Compile Include="Assets\Scripts\InfoManager.cs" />
     <Compile Include="Assets\Scripts\Npc.cs" />
+    <Compile Include="Assets\Scripts\Npc\NpcArcher.cs" />
     <Compile Include="Assets\Scripts\Npc\NpcBase.cs" />
     <Compile Include="Assets\Scripts\NpcGenerator.cs" />
     <Compile Include="Assets\Scripts\NpcSpriteController.cs" />

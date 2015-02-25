@@ -9,11 +9,11 @@ public class NpcBase : MonoBehaviour {
 	public GameObject arrowPrefab;
 	public Transform destTr;
 	private Transform mTempDestTr;
-	private float mDefSpeed;
+	protected float mDefSpeed;
 	protected int mLayerMask;
 	private NpcGenerator.EquipType mEquipType;
 	private NpcGenerator mGenScr;
-	private float mCkDistMin,mCkDistMax;
+	protected float mCkDistMin,mCkDistMax;
 	protected Vector3 mDestinationPos;
 	protected Vector3 mNextPos;
 	protected NavMeshPath mPath;
@@ -32,7 +32,7 @@ public class NpcBase : MonoBehaviour {
 	public delegate void UnitRemovedDelegate();
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
-	void Awake(){
+	virtual public void Awake(){
 		mPath = new NavMeshPath ();
 		mLayerMask = 0;
 		mDefSpeed = 2.0f * (0.8f + Random.value * 0.4f);
@@ -41,7 +41,7 @@ public class NpcBase : MonoBehaviour {
 	}
 	
 	// Use this for initialization
-	void Start () {
+	virtual public void Start () {
 
 		switch (mEquipType)
 		{
@@ -82,7 +82,7 @@ public class NpcBase : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	virtual public void Update () {
 		Vector3 pos = mNextPos;
 		bool ck = (Random.value < 0.01f);
 		if (ck) {
@@ -126,7 +126,7 @@ public class NpcBase : MonoBehaviour {
 		return retTr;
 	}
 
-	protected void updateAI(){
+	protected virtual bool updateAI(){
 		mTempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
 		if (mTempDestTr != null) {
 			mStoppingDist = 0f;
@@ -153,13 +153,14 @@ public class NpcBase : MonoBehaviour {
 		if(mTempDestTr!=null){
 			if ((transform.position - mTempDestTr.position).magnitude < 0.2f) {
 				KillMe();
-				return;
+				return false;
 			}
 			else if ((transform.position - mTempDestTr.position).magnitude < 0.5f)
 			{
 				m_npcSpriteObject.GetComponent<Animator>().SetBool("IsHit", true);
 			}
 		}
+		return true;
 	}
 	
 	private void updatePath(Vector3 _srcPos, Vector3 _tgtPos){
