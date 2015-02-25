@@ -3,10 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class NpcGenerator : MonoBehaviour {
-	public enum NaviLayer{
-		BrigeRed =  (1 << 6),
-		BrigeBlue = (1 << 7),
-	}
 	public enum EquipType{
 		Trooper,
 		Archer,
@@ -21,7 +17,7 @@ public class NpcGenerator : MonoBehaviour {
 		public Transform spawnTr;
 		public Transform destTr;
 		public NpcKind kind;
-		public NaviLayer naviLayer;
+		public string naviLayerStr;
 	}
 	public enum NpcKind{ Red, Blue }
 	private static string[] nameArr=new string[2]{"npcRed","npcBlue"};
@@ -186,7 +182,7 @@ public class NpcGenerator : MonoBehaviour {
 		npc.transform.position = npcGpInfo[id].spawnTr.position + Vector3.up * 0.5f;
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
-		npc.SendMessage ("SM_addNaviLayer", (int)npcGpInfo[id].naviLayer);
+		npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
 		npc.SendMessage ("SM_setDest", npcGpInfo[id].destTr);
 		npc.SendMessage ("SM_setEquipType", _equipType);
         npc.SendMessage("SM_setIsEnemy", (_kind != NpcKind.Red));
@@ -195,9 +191,9 @@ public class NpcGenerator : MonoBehaviour {
 		// add to list
 		mNpcListArr[id].Add(npc);
 
+		npc.SendMessage ("SM_addNaviLayer","Default");
 		if (Random.value < 0.5f) {
-			int layerHillMask = NavMesh.GetNavMeshLayerFromName("layerHill");
-			npc.SendMessage ("SM_addNaviLayer",(1<<layerHillMask));
+			npc.SendMessage ("SM_addNaviLayer","layerHill");
 		}
 	}
 

@@ -20,8 +20,8 @@ public class InfoManager : MonoBehaviour {
         FPSTextObj = GameObject.Find("TextFPS");
         NumUnitsTextObj = GameObject.Find("TextNumUnits");
 
-        Npc.UnitCreatedEvent += UnitAdded;
-        Npc.UnitRemovedEvent += UnitRemoved;
+        NpcBase.UnitCreatedEvent += UnitAdded;
+		NpcBase.UnitRemovedEvent += UnitRemoved;
 	}
 	
 	// Update is called once per frame
