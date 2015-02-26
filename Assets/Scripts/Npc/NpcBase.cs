@@ -5,8 +5,60 @@ using System.Collections.Generic;
 public class NpcBase : MonoBehaviour {
 	private const float UP_OFS = 0.1f;
 	private const float NEAR_RANGE_SQ = 0.5f*0.5f;
+	private const float DEF_SPEED = 0.4f;
 
-	public GameObject arrowPrefab;
+	public class MyAgent{
+		private NavMeshPath mPath;
+		private Vector3[] mCorners;
+		private int mCornerPtr;
+		private Vector3 mPosition;
+		public Vector3[] corners { get { return mCorners; } }
+		public int cornerPtr { get { return mCornerPtr; } }
+		public Vector3 position { get { return mPosition; } }
+		public float speed { get; set; }
+		public int layerMask { get; set; }
+
+		public MyAgent(){
+			mPath = new NavMeshPath();
+			mCorners = new Vector3[0];
+			speed = 0f;
+			layerMask = 0;
+		}
+		public bool CalculatePath(Vector3 _srcPos, Vector3 _tgtPos, int _mask){
+			bool ret = false;
+			if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
+				mCorners = mPath.corners;
+				mCornerPtr = 0;
+				mPosition = _srcPos;
+				if(mCorners.Length>0){
+					ret = true;
+				}
+			}
+			return ret;
+		}
+		public bool UpdatePosition(){
+			bool ret = false;
+			if ((mCorners != null) && (mCorners.Length > mCornerPtr) ) {
+				if(mCornerPtr<mCorners.Length){
+					Vector3 tgtPos = mCorners[mCornerPtr];
+					Vector3 dir = tgtPos - mPosition;
+					float spd = Mathf.Min (dir.magnitude,speed*Time.deltaTime);
+					mPosition += dir.normalized * spd;
+					if(spd==0f){
+						if(mCornerPtr < (mCorners.Length-1) ){
+							mCornerPtr++;
+							ret = true;
+						}
+					}else{
+						ret = true;
+					}
+				}
+			}
+			Debug.DrawLine (mPosition - Vector3.up * 2f, mPosition + Vector3.up * 2f, Color.white);
+			return ret;
+		}
+	}
+
 	public Transform destTr;
 	private Transform mTempDestTr;
 	protected float mDefSpeed;
@@ -16,8 +68,9 @@ public class NpcBase : MonoBehaviour {
 	protected float mCkDistMin,mCkDistMax;
 	protected Vector3 mDestinationPos;
 	protected Vector3 mNextPos;
-	protected NavMeshPath mPath;
-	protected float mStoppingDist;
+
+	// for myAgent
+	protected MyAgent mAg;
 
 	private Camera m_mainCamera;
 	
@@ -26,16 +79,17 @@ public class NpcBase : MonoBehaviour {
 	private GameObject m_npcSpriteObject;
 	private int SPRITE_CHILD_INDEX = 0;
 	private bool m_isEnemy;
-	
+	private float m_stoppingDist;
+
 	public delegate void UnitCreatedDelegate();
 	public static event UnitCreatedDelegate UnitCreatedEvent;
 	public delegate void UnitRemovedDelegate();
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
 	virtual public void Awake(){
-		mPath = new NavMeshPath ();
+		mAg = new MyAgent ();
+
 		mLayerMask = 0;
-		mDefSpeed = 2.0f * (0.8f + Random.value * 0.4f);
 
 		m_mainCamera = Camera.main;
 	}
@@ -76,6 +130,10 @@ public class NpcBase : MonoBehaviour {
 			break;
 		}
 		
+		mAg.speed = DEF_SPEED * (0.8f + Random.value * 0.4f);
+		mDefSpeed = mAg.speed;
+		mAg.CalculatePath(transform.position,destTr.position,mAg.layerMask);
+
 		m_npcSpriteObject.transform.position = this.transform.position;
 		
 		UnitCreatedEvent();
@@ -83,15 +141,18 @@ public class NpcBase : MonoBehaviour {
 	
 	// Update is called once per frame
 	virtual public void Update () {
+		if (mAg.corners.Length == 0) {
+			mAg.CalculatePath(transform.position,mDestinationPos,mLayerMask);
+		}
+
+		bool ck = (mAg.corners==null);
+
 		Vector3 pos = mNextPos;
-		bool ck = (Random.value < 0.01f);
+		ck |= (Random.value < 0.01f);
 		if (ck) {
 			updateAI();
 			pos = transform.position;
-		}
-		ck |= ((pos - transform.position).sqrMagnitude < NEAR_RANGE_SQ);
-		if (ck) {
-			updatePath(pos,destTr.position);
+			mAg.CalculatePath(transform.position,mDestinationPos,mLayerMask);
 		}
 
 		//カメラに向かう
@@ -99,7 +160,14 @@ public class NpcBase : MonoBehaviour {
 		lookAtPos.y = 0;
 		this.transform.LookAt(lookAtPos, Vector3.up);
 
-		updatePosition();
+		if (mAg.corners.Length > 0) {
+			mNextPos = updatePosition (mNextPos);
+		}
+
+		//test
+		if ((transform.position - destTr.position).sqrMagnitude < 2f) {
+			KillMe();
+		}
 		debugCourseDisp ();
 	}
 	
@@ -120,7 +188,6 @@ public class NpcBase : MonoBehaviour {
 				retTr = go.transform;
 				break;
 			}
-			//Debug.DrawLine(go.transform.position,go.transform.position+Vector3.up*3f,renderer.material.color);
 		}
 		
 		return retTr;
@@ -129,7 +196,7 @@ public class NpcBase : MonoBehaviour {
 	protected virtual bool updateAI(){
 		mTempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
 		if (mTempDestTr != null) {
-			mStoppingDist = 0f;
+			m_stoppingDist = 0f;
 			switch(mEquipType){
 			default:
 				mDestinationPos = mTempDestTr.position;
@@ -147,7 +214,7 @@ public class NpcBase : MonoBehaviour {
 		}
 		else
 		{
-			mStoppingDist = 0.75f;
+			m_stoppingDist = 0.75f;
 			mDestinationPos = destTr.position;
 		}
 		if(mTempDestTr!=null){
@@ -163,22 +230,22 @@ public class NpcBase : MonoBehaviour {
 		return true;
 	}
 	
-	private void updatePath(Vector3 _srcPos, Vector3 _tgtPos){
-		if (NavMesh.CalculatePath (_srcPos, _tgtPos, mLayerMask, mPath)) {
-			if (mPath.corners.Length > 1) {
-				Vector3 upOfs = Vector3.up * UP_OFS;
-				mNextPos = mPath.corners [1];
-				NavMeshHit hit;
-				if (NavMesh.Raycast (_srcPos + upOfs, mNextPos + upOfs, out hit, mLayerMask)) {
-//					mNextPos = hit.position;
-				}
+	private Vector3 updatePosition(Vector3 _nextPos){
+		mAg.UpdatePosition ();
+		transform.position = mAg.position;
+		return _nextPos;
+
+
+		Vector3 ret = _nextPos;
+		Vector3 dir = mAg.position - transform.position;
+		if (dir.magnitude < mAg.speed) {
+			Vector3 nextPos = transform.position + dir.normalized * mAg.speed * Time.deltaTime;
+			gameObject.rigidbody.MovePosition (nextPos+Vector3.up*UP_OFS);
+			if (mAg.corners.Length > mAg.cornerPtr) {
+				ret = mAg.corners[mAg.cornerPtr];
 			}
 		}
-	}
-	private void updatePosition(){
-		Vector3 dir = (mNextPos - transform.position).normalized;
-		float hSpd = Time.deltaTime * mDefSpeed;
-		gameObject.rigidbody.MovePosition (transform.position + dir * hSpd);
+		return ret;
 	}
 
 	//--------------
@@ -200,6 +267,7 @@ public class NpcBase : MonoBehaviour {
 		int layer = NavMesh.GetNavMeshLayerFromName(_layerStr);
 		if (layer >= 0) {
 			mLayerMask |= (1 << layer);
+			mAg.layerMask |= (1 << layer);
 		} else {
 			Debug.Log("warning: bad layer name.");
 		}
@@ -225,14 +293,14 @@ public class NpcBase : MonoBehaviour {
 
 	//----------------------
 	private void debugCourseDisp(){
-		if ((mPath != null)&&(mPath.corners.Length>1)) {
-			Vector3 sttPos = mPath.corners [0]+Vector3.up*UP_OFS;
-			for (int ii = 1; ii < mPath.corners.Length; ++ii) {
-				Vector3 pos = mPath.corners [ii]+Vector3.up*UP_OFS;
-				Debug.DrawLine (sttPos, pos, Color.red);
+		if ((mAg != null)&&(mAg.corners.Length>0)) {
+			Vector3 sttPos = mAg.corners [0]+Vector3.up*UP_OFS;
+			for (int ii = 1; ii < mAg.corners.Length; ++ii) {
+				float rate = ((float)ii/(float)mAg.corners.Length);
+				Vector3 pos = mAg.corners [ii]+Vector3.up*UP_OFS;
+				Debug.DrawLine (sttPos, pos, Color.Lerp(Color.red,Color.blue,rate));
 				sttPos = pos;
 			}
-			Debug.DrawLine (transform.position,mNextPos+Vector3.up * UP_OFS,Color.yellow);
 		}
 	}
 

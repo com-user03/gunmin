@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class NpcArcher : NpcBase {
+	public GameObject arrowPrefab;
+
 	virtual public void Awake(){
 		base.Awake ();
 	}

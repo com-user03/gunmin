@@ -1,18 +1,18 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Npc\NpcArcher.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Npc\NpcBase.cs">
     <Files>
-      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="67" Column="41" />
-      <File FileName="Assets\Scripts\NpcGenerator.cs" Line="4" Column="1" />
-      <File FileName="Assets\Scripts\Npc.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\InfoManager.cs" Line="1" Column="1" />
-      <File FileName="..\..\..\unity43\samples\NavMeshExample\Assets\MySample\scripts\npc\NpcBase.cs" Line="19" Column="1" />
-      <File FileName="Assets\Scripts\Npc\NpcArcher.cs" Line="18" Column="33" />
+      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="19" Column="37" />
+      <File FileName="Assets\Scripts\Npc\NpcArcher.cs" Line="16" Column="20" />
+      <File FileName="Assets\Scripts\NpcGenerator.cs" Line="182" Column="21" />
+      <File FileName="Assets\Scripts\InfoManager.cs" Line="48" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Npc\NpcBase.cs" line="204" />
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Npc\NpcBase.cs" line="272" />
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Npc\NpcBase.cs" line="43" />
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Npc\NpcBase.cs" line="249" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
