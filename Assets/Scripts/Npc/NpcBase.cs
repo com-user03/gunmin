@@ -142,7 +142,13 @@ public class NpcBase : MonoBehaviour {
 	// Update is called once per frame
 	virtual public void Update () {
 		if (mAg.corners.Length == 0) {
-			mAg.CalculatePath(transform.position,mDestinationPos,mLayerMask);
+			NavMeshHit hit;
+			Vector3 tmpPos = transform.position;
+			Vector3 tmpOfs = Vector3.up*1f;
+			if(NavMesh.Raycast(tmpPos-tmpOfs,tmpPos+tmpOfs,out hit,mAg.layerMask)){
+				tmpPos = hit.position;
+			}
+			mAg.CalculatePath(tmpPos,mDestinationPos,mLayerMask);
 		}
 
 		bool ck = (mAg.corners==null);
