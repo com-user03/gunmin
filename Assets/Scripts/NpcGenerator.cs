@@ -16,11 +16,12 @@ public class NpcGenerator : MonoBehaviour {
 		public Color color;
 		public Transform spawnTr;
 		public Transform destTr;
-		public NpcKind kind;
+		public NpcTeam team;
 		public string naviLayerStr;
 	}
-	public enum NpcKind{ Red, Blue }
-	private static string[] nameArr=new string[2]{"npcRed","npcBlue"};
+	private const int TEAM_NUM = 2;
+	public enum NpcTeam{ Red=0, Blue=1 }
+	private static string[] nameArr;
 	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
     
     //private int m_guiButtonWidth;
@@ -43,6 +44,10 @@ public class NpcGenerator : MonoBehaviour {
     private bool m_isButtonHeld;
     private EquipType m_npcToSpawn;
     private int m_npcToSpawnTeamIndex;
+
+	void Awake(){
+		nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -81,7 +86,7 @@ public class NpcGenerator : MonoBehaviour {
                 if (mSpawnCnt[ii] > 0)
                 {
                     mSpawnCnt[ii]--;
-                    spawnNpc(npcGpInfo[ii].kind, mEquipType[ii]);
+                    spawnNpc(npcGpInfo[ii].team, mEquipType[ii]);
                 }
             }
             //}
@@ -164,19 +169,25 @@ public class NpcGenerator : MonoBehaviour {
         m_isButtonHeld = false;
     }
 
-	public List<GameObject> GetEnemyListByMyName(string _myName){
+	public List<GameObject> GetEnemyListByMyName(string _name){
+		return GetEnemyListByTeam (_name == nameArr [0] ? NpcTeam.Red : NpcTeam.Blue);
+	}
+	public List<GameObject> GetEnemyListByTeam(NpcTeam _team){
 		List<GameObject> retArr = new List<GameObject>();
-		for(int ii = 0; ii < nameArr.Length; ++ii){
-			if(_myName!=nameArr[ii]){
-				retArr.AddRange(mNpcListArr[ii]);
+		int teamId = (int)_team;
+		if (teamId < nameArr.Length) {
+			for(int ii = 0; ii < mNpcListArr.Length; ++ii){
+				if(ii != teamId){
+					retArr.AddRange(mNpcListArr[ii]);
+				}
 			}
 		}
 		return retArr;
 	}
 
 
-	private void spawnNpc(NpcKind _kind, EquipType _equipType){
-		int id = (_kind == NpcKind.Red) ? 0 : 1;
+	private void spawnNpc(NpcTeam _team, EquipType _equipType){
+		int id = (int)_team;
 		GameObject npc = GameObject.Instantiate (npcPrefab) as GameObject;
 		npc.name = nameArr [id];
 		npc.transform.position = npcGpInfo[id].spawnTr.position + Vector3.up * 0.5f;
@@ -185,7 +196,7 @@ public class NpcGenerator : MonoBehaviour {
 		npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
 		npc.SendMessage ("SM_setDest", npcGpInfo[id].destTr);
 		npc.SendMessage ("SM_setEquipType", _equipType);
-        npc.SendMessage("SM_setIsEnemy", (_kind != NpcKind.Red));
+		npc.SendMessage("SM_setTeam", npcGpInfo[id].team);
         //npc.SendMessage("SM_setColor", npcGpInfo [id].color);
 
 		// add to list

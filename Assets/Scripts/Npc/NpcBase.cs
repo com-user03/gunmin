@@ -54,7 +54,6 @@ public class NpcBase : MonoBehaviour {
 					}
 				}
 			}
-			Debug.DrawLine (mPosition - Vector3.up * 2f, mPosition + Vector3.up * 2f, Color.white);
 			return ret;
 		}
 	}
@@ -68,6 +67,7 @@ public class NpcBase : MonoBehaviour {
 	protected float mCkDistMin,mCkDistMax;
 	protected Vector3 mDestinationPos;
 	protected Vector3 mNextPos;
+	protected NpcGenerator.NpcTeam mTeam;
 
 	// for myAgent
 	protected MyAgent mAg;
@@ -78,7 +78,6 @@ public class NpcBase : MonoBehaviour {
 	public GameObject NpcSpriteObject;
 	private GameObject m_npcSpriteObject;
 	private int SPRITE_CHILD_INDEX = 0;
-	private bool m_isEnemy;
 	private float m_stoppingDist;
 
 	public delegate void UnitCreatedDelegate();
@@ -97,6 +96,7 @@ public class NpcBase : MonoBehaviour {
 	// Use this for initialization
 	virtual public void Start () {
 
+		bool isEnemy = (mTeam != NpcGenerator.NpcTeam.Red);
 		switch (mEquipType)
 		{
 		default:
@@ -106,27 +106,27 @@ public class NpcBase : MonoBehaviour {
 		case  NpcGenerator.EquipType.Trooper:
 			mCkDistMin = 0f;
 			mCkDistMax = 2.0f;
-			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
+			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
 			break;
 		case  NpcGenerator.EquipType.Archer:
 			mCkDistMin = 4f;
 			mCkDistMax = 6f;
-			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
+			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
 			break;
 		case  NpcGenerator.EquipType.Guardian:
 			mCkDistMin = 0f;
 			mCkDistMax = 0.5f;
-			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
+			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
 			break;
 		case  NpcGenerator.EquipType.Trooper2:
 			mCkDistMin = 0f;
 			mCkDistMax = 2.0f;
-			this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[4];
+			this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[4];
 			break;
 		case  NpcGenerator.EquipType.Trooper3:
 			mCkDistMin = 0f;
 			mCkDistMax = 2.0f;
-			this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (m_isEnemy) ? m_npcSprites[3] : m_npcSprites[5];
+			this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[5];
 			break;
 		}
 		
@@ -187,12 +187,14 @@ public class NpcBase : MonoBehaviour {
 	
 	private Transform getNearestEm (Vector3 _pos, float _minDist, float _maxDist){
 		Transform retTr = null;
-		List<GameObject> goList = mGenScr.GetEnemyListByMyName (name);
+		List<GameObject> goList = mGenScr.GetEnemyListByTeam (mTeam);
 		foreach (GameObject go in goList) {
-			float distSq = (go.transform.position-transform.position).sqrMagnitude;
-			if((distSq < _maxDist*_maxDist)&&(distSq > _minDist*_minDist)){
-				retTr = go.transform;
-				break;
+			if(go!=this.gameObject){
+				float distSq = (go.transform.position-transform.position).sqrMagnitude;
+				if((distSq < _maxDist*_maxDist)&&(distSq > _minDist*_minDist)){
+					retTr = go.transform;
+					break;
+				}
 			}
 		}
 		
@@ -211,7 +213,7 @@ public class NpcBase : MonoBehaviour {
 				mDestinationPos = mTempDestTr.position;
 				break;
 			case  NpcGenerator.EquipType.Archer:
-				mDestinationPos = transform.position;
+				mDestinationPos = mTempDestTr.position;
 				break;
 			case  NpcGenerator.EquipType.Guardian:
 				mDestinationPos = mTempDestTr.position;
@@ -282,9 +284,9 @@ public class NpcBase : MonoBehaviour {
 		mEquipType = _equipType;
 		//Debug.Log("mEquipType="+mEquipType.ToString());
 	}
-	private void SM_setIsEnemy(bool isEnemy)
+	private void SM_setTeam(NpcGenerator.NpcTeam _team)
 	{
-		m_isEnemy = isEnemy;
+		mTeam = _team;
 	}
 	private void SM_setColor(Color color)
 	{
@@ -299,9 +301,10 @@ public class NpcBase : MonoBehaviour {
 
 	//----------------------
 	private void debugCourseDisp(){
+		Debug.DrawLine (transform.position - Vector3.up, transform.position + Vector3.up, Color.white);
 		if ((mAg != null)&&(mAg.corners.Length>0)) {
-			Vector3 sttPos = mAg.corners [0]+Vector3.up*UP_OFS;
-			for (int ii = 1; ii < mAg.corners.Length; ++ii) {
+			Vector3 sttPos = transform.position+Vector3.up*UP_OFS;
+			for (int ii = 0; ii < mAg.corners.Length; ++ii) {
 				float rate = ((float)ii/(float)mAg.corners.Length);
 				Vector3 pos = mAg.corners [ii]+Vector3.up*UP_OFS;
 				Debug.DrawLine (sttPos, pos, Color.Lerp(Color.red,Color.blue,rate));
