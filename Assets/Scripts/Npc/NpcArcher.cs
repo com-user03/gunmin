@@ -23,7 +23,9 @@ public class NpcArcher : NpcBase {
 	
 	override protected bool updateAI(){
 		if (base.updateAI ()) {
-			setArrow(destTr,20f);
+			if(Random.value>0.95f){
+				setArrow(destTr,10f); //仮 
+			}
 		}
 		return true;
 	}

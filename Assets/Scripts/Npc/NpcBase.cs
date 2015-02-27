@@ -68,13 +68,13 @@ public class NpcBase : MonoBehaviour {
 	protected Vector3 mDestinationPos;
 	protected Vector3 mNextPos;
 	protected NpcGenerator.NpcTeam mTeam;
+	protected NpcGenerator.NpcSpriteInfo mSpriteInfo;
 
 	// for myAgent
-	protected MyAgent mAg;
+	protected MyAgent mAg = new MyAgent ();
 
 	private Camera m_mainCamera;
 	
-	public Sprite[] m_npcSprites;
 	public GameObject NpcSpriteObject;
 	private GameObject m_npcSpriteObject;
 	private int SPRITE_CHILD_INDEX = 0;
@@ -86,8 +86,6 @@ public class NpcBase : MonoBehaviour {
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
 	virtual public void Awake(){
-		mAg = new MyAgent ();
-
 		mLayerMask = 0;
 
 		m_mainCamera = Camera.main;
@@ -106,30 +104,26 @@ public class NpcBase : MonoBehaviour {
 		case  NpcGenerator.EquipType.Trooper:
 			mCkDistMin = 0f;
 			mCkDistMax = 2.0f;
-			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[0];
 			break;
 		case  NpcGenerator.EquipType.Archer:
 			mCkDistMin = 4f;
 			mCkDistMax = 6f;
-			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[1];
 			break;
 		case  NpcGenerator.EquipType.Guardian:
 			mCkDistMin = 0f;
 			mCkDistMax = 0.5f;
-			m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[2];
 			break;
 		case  NpcGenerator.EquipType.Trooper2:
 			mCkDistMin = 0f;
 			mCkDistMax = 2.0f;
-			this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[4];
 			break;
 		case  NpcGenerator.EquipType.Trooper3:
 			mCkDistMin = 0f;
 			mCkDistMax = 2.0f;
-			this.transform.GetChild(SPRITE_CHILD_INDEX).gameObject.GetComponent<SpriteRenderer>().sprite = (isEnemy) ? m_npcSprites[3] : m_npcSprites[5];
 			break;
 		}
-		
+		m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = mSpriteInfo.sprite;
+
 		mAg.speed = DEF_SPEED * (0.8f + Random.value * 0.4f);
 		mDefSpeed = mAg.speed;
 		mAg.CalculatePath(transform.position,destTr.position,mAg.layerMask);
@@ -205,20 +199,7 @@ public class NpcBase : MonoBehaviour {
 		mTempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
 		if (mTempDestTr != null) {
 			m_stoppingDist = 0f;
-			switch(mEquipType){
-			default:
-				mDestinationPos = mTempDestTr.position;
-				break;
-			case  NpcGenerator.EquipType.Trooper:
-				mDestinationPos = mTempDestTr.position;
-				break;
-			case  NpcGenerator.EquipType.Archer:
-				mDestinationPos = mTempDestTr.position;
-				break;
-			case  NpcGenerator.EquipType.Guardian:
-				mDestinationPos = mTempDestTr.position;
-				break;
-			}
+			mDestinationPos = mTempDestTr.position;
 		}
 		else
 		{
@@ -280,17 +261,17 @@ public class NpcBase : MonoBehaviour {
 			Debug.Log("warning: bad layer name.");
 		}
 	}
-	private void SM_setEquipType( NpcGenerator.EquipType _equipType){
-		mEquipType = _equipType;
-		//Debug.Log("mEquipType="+mEquipType.ToString());
-	}
-	private void SM_setTeam(NpcGenerator.NpcTeam _team)
-	{
-		mTeam = _team;
-	}
+	private void SM_setEquipType( NpcGenerator.EquipType _equipType){}
+	private void SM_setTeam(NpcGenerator.NpcTeam _team)	{}
 	private void SM_setColor(Color color)
 	{
 		m_npcSpriteObject.renderer.material.color = color;
+	}
+	private void SM_setSpriteInfo(NpcGenerator.NpcSpriteInfo _info)
+	{
+		mSpriteInfo = _info;
+		mTeam = _info.team;
+		mEquipType = _info.type;
 	}
 	
 	private void SM_removeMe()

@@ -3,13 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class NpcGenerator : MonoBehaviour {
-	public enum EquipType{
-		Trooper,
-		Archer,
-		Guardian,
-		Trooper2,
-		Trooper3,
-	}
 	[System.Serializable]
 	public struct NpcGroupInfo{
 		public string name;
@@ -19,9 +12,26 @@ public class NpcGenerator : MonoBehaviour {
 		public NpcTeam team;
 		public string naviLayerStr;
 	}
+
+	[System.Serializable]
+	public class NpcSpriteInfo{
+		public string name;
+		public GameObject basePrefab;
+		public Sprite sprite;
+		public NpcGenerator.NpcTeam team;
+		public NpcGenerator.EquipType type;
+	}
+	
 	private const int TEAM_NUM = 2;
 	public enum NpcTeam{ Red=0, Blue=1 }
-	private static string[] nameArr;
+	public enum EquipType{
+		Trooper  = 0,
+		Archer   = 1,
+		Guardian = 2,
+		Trooper2 = 3,
+		Trooper3 = 4,
+	}
+	private static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
 	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
     
     //private int m_guiButtonWidth;
@@ -34,8 +44,9 @@ public class NpcGenerator : MonoBehaviour {
 	public int liveMax;
     private const float SPAWN_DELAY_TIME = 0.1f;
     private float spawnDelay = 0.0f;
-	public GameObject npcPrefab;
+	private GameObject mNpcPrefab;
 	public NpcGroupInfo[] npcGpInfo;
+	public NpcSpriteInfo[] npcSpriteInfo;
 
 	private List<GameObject>[] mNpcListArr;
 	private int[] mSpawnCnt;
@@ -46,7 +57,7 @@ public class NpcGenerator : MonoBehaviour {
     private int m_npcToSpawnTeamIndex;
 
 	void Awake(){
-		nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
+//		nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
 	}
 
 	// Use this for initialization
@@ -188,16 +199,21 @@ public class NpcGenerator : MonoBehaviour {
 
 	private void spawnNpc(NpcTeam _team, EquipType _equipType){
 		int id = (int)_team;
-		GameObject npc = GameObject.Instantiate (npcPrefab) as GameObject;
+		int sprInfoId = (int)_equipType * TEAM_NUM + id;
+		mNpcPrefab = npcSpriteInfo [sprInfoId].basePrefab;
+		if (mNpcPrefab == null) {
+			return;
+		}
+
+		GameObject npc = GameObject.Instantiate (mNpcPrefab) as GameObject;
 		npc.name = nameArr [id];
 		npc.transform.position = npcGpInfo[id].spawnTr.position + Vector3.up * 0.5f;
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
 		npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
 		npc.SendMessage ("SM_setDest", npcGpInfo[id].destTr);
-		npc.SendMessage ("SM_setEquipType", _equipType);
-		npc.SendMessage("SM_setTeam", npcGpInfo[id].team);
-        //npc.SendMessage("SM_setColor", npcGpInfo [id].color);
+		npc.SendMessage("SM_setSpriteInfo", npcSpriteInfo[sprInfoId]);
+		//npc.SendMessage("SM_setColor", npcGpInfo [id].color);
 
 		// add to list
 		mNpcListArr[id].Add(npc);
