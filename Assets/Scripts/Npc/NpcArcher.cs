@@ -24,16 +24,20 @@ public class NpcArcher : NpcBase {
 	override protected bool updateAI(){
 		if (base.updateAI ()) {
 			if(Random.value>0.95f){
-				setArrow(destTr,10f); //仮 
+				setArrow(destTr,5f); //仮 
 			}
 		}
 		return true;
 	}
+	override protected Vector3 updatePosition(Vector3 _nextPos){
+		return base.updatePosition (_nextPos);
+	}
 
 	//---------------------------------
-	private void setArrow(Transform _tgtTr, float _arrowSpd){
+	private bool setArrow(Transform _tgtTr, float _arrowSpd){
+		bool ret = false;
 		Vector3 _pos = _tgtTr.transform.position;
-		Vector3 npcSpdVec = destTr.forward.normalized * mDefSpeed; //仮 
+		Vector3 npcSpdVec = Vector3.zero; //仮 
 		float[] time = TmMath.CollideTime (_pos, npcSpdVec, transform.position, _arrowSpd);
 		if (time != null) {
 			//			Debug.Log ("reachTIme=" + time [0]);
@@ -46,8 +50,9 @@ public class NpcArcher : NpcBase {
 			bulletGo.transform.rotation = Quaternion.FromToRotation(Vector3.forward,spdVec.normalized);
 			bulletGo.rigidbody.velocity=Vector3.zero;
 			bulletGo.rigidbody.AddForce(spdVec,ForceMode.VelocityChange);
-			Destroy (bulletGo, 2f);
+			ret = true;
 		}
+		return ret;
 	}
 	
 	

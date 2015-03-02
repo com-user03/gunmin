@@ -36,14 +36,15 @@ public class MyAgent{
 			if(mCornerPtr<mCorners.Length){
 				Vector3 tgtPos = mCorners[mCornerPtr];
 				Vector3 dir = tgtPos - mPosition;
-				float spd = Mathf.Min (dir.magnitude,speed*Time.deltaTime);
+				float deltaSpd = speed*Time.deltaTime;
+				float spd = Mathf.Min (dir.magnitude,deltaSpd);
 				mPosition += dir.normalized * spd;
 				NavMeshHit hit;
 				Vector3 ofsH = Vector3.up * 1f;
-				if(NavMesh.Raycast(mPosition+ofsH,mPosition,out hit,layerMask)){
+				if(NavMesh.Raycast(mPosition+ofsH,mPosition-ofsH,out hit,layerMask)){
 					mPosition.y = hit.position.y;
 				}
-				if(spd==0f){
+				if(spd<deltaSpd){
 					if(mCornerPtr < (mCorners.Length-1) ){
 						mCornerPtr++;
 						ret = true;
@@ -62,13 +63,15 @@ public class MyAgent{
 		if (corners.Length>0) {
 			Debug.DrawLine (mPosition-Vector3.up, mPosition+Vector3.up, Color.white);
 			Vector3 sttPos = corners [0];
-			for (int ii = 1; ii < corners.Length; ++ii) {
-				float rate = ((float)(ii-1)/(float)(corners.Length-1));
+			for (int ii = 0; ii < corners.Length; ++ii) {
 				Vector3 pos = corners [ii];
-				Color col = Color.Lerp(_sttCol,_endCol,rate);
-				Color hCol = new Color(col.r,col.g,col.b,col.a*0.3f);
-				Debug.DrawLine (sttPos, pos, hCol,0f,false);
-				Debug.DrawLine (sttPos, pos, col);
+				if(ii>0){
+					float rate = ((float)(ii-1)/(float)(corners.Length-1));
+					Color col = Color.Lerp(_sttCol,_endCol,rate);
+//					Color hCol = new Color(col.r,col.g,col.b,col.a*0.3f);
+//					Debug.DrawLine (sttPos, pos, hCol,0f,false);
+					Debug.DrawLine (sttPos, pos, col);
+				}
 				sttPos = pos;
 			}
 			ret = true;

@@ -164,9 +164,13 @@ public class NpcBase : MonoBehaviour {
 		return true;
 	}
 	
-	private Vector3 updatePosition(Vector3 _nextPos){
+	protected virtual Vector3 updatePosition(Vector3 _nextPos){
 		mAg.UpdatePosition ();
-		transform.position = mAg.position;
+		Vector3 dir = mAg.position - transform.position;
+//		dir.y = 0f;
+//		gameObject.rigidbody.AddForce (dir, ForceMode.VelocityChange);
+		gameObject.rigidbody.MovePosition (transform.position + dir);
+
 		/*
 		RaycastHit hit;
 		Ray ray = new Ray (transform.position + Vector3.up*UP_OFS, mAg.position - transform.position);
@@ -174,7 +178,7 @@ public class NpcBase : MonoBehaviour {
 			transform.position = hit.point;
 		}
 		*/
-		return _nextPos;
+		return mAg.position;
 	}
 
 	public void SetDestination(Vector3 dest)

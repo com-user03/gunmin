@@ -3,14 +3,24 @@ using System.Collections;
 
 public class Arrow : MonoBehaviour {
 	private float mNoHitTimer;
+	private float mLifeTimer;
+	void Awake () {
+		gameObject.collider.enabled = false;
+	}
 	// Use this for initialization
 	void Start () {
 		mNoHitTimer = 0.1f;
-		gameObject.collider.enabled = false;
+		mLifeTimer = 2f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		mLifeTimer -= Time.deltaTime;
+		if (mLifeTimer < 0f) {
+			Destroy (gameObject);
+			return;
+		}
+
 		if (mNoHitTimer > 0f) {
 			mNoHitTimer -= Time.deltaTime;
 			if(mNoHitTimer<=0f){
@@ -38,5 +48,18 @@ public class Arrow : MonoBehaviour {
 		}
 		Destroy (gameObject);
 	}
-	
+
+	private void debugDraw(){
+		Vector3 sttPos = transform.position;
+		Vector3 spd = gameObject.rigidbody.velocity;
+		float timer = mLifeTimer;
+		float divTime = 0.1f;
+		while(timer>0f){
+			Vector3 pos = sttPos + spd * divTime;
+			spd += Physics.gravity * divTime;
+			Debug.DrawLine(sttPos,pos,Color.red);
+			sttPos = pos;
+			timer -= divTime;
+		}
+	}
 }
