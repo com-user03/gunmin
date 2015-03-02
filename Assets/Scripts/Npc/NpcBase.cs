@@ -69,16 +69,17 @@ public class NpcBase : MonoBehaviour {
 	protected Vector3 mNextPos;
 	protected NpcGenerator.NpcTeam mTeam;
 	protected NpcGenerator.NpcSpriteInfo mSpriteInfo;
+	public Sprite EnemySprite;
 
 	// for myAgent
 	protected MyAgent mAg = new MyAgent ();
 
 	private Camera m_mainCamera;
 	
-	public GameObject NpcSpriteObject;
+	public GameObject NpcSpriteContainer;
 	private GameObject m_npcSpriteObject;
+	private GameObject m_selectedUI;
 	private int SPRITE_CHILD_INDEX = 0;
-	private float m_stoppingDist;
 
 	public delegate void UnitCreatedDelegate();
 	public static event UnitCreatedDelegate UnitCreatedEvent;
@@ -122,13 +123,12 @@ public class NpcBase : MonoBehaviour {
 			mCkDistMax = 2.0f;
 			break;
 		}
-		m_npcSpriteObject.gameObject.GetComponent<SpriteRenderer>().sprite = mSpriteInfo.sprite;
+		Sprite npcSprite = (isEnemy) ? EnemySprite : mSpriteInfo.sprite;
+		NpcSpriteContainer.GetComponent<NpcSpriteController>().SetSprite(npcSprite);
 
 		mAg.speed = DEF_SPEED * (0.8f + Random.value * 0.4f);
 		mDefSpeed = mAg.speed;
 		mAg.CalculatePath(transform.position,destTr.position,mAg.layerMask);
-
-		m_npcSpriteObject.transform.position = this.transform.position;
 		
 		UnitCreatedEvent();
 	}
@@ -155,11 +155,6 @@ public class NpcBase : MonoBehaviour {
 			mAg.CalculatePath(transform.position,mDestinationPos,mLayerMask);
 		}
 
-		//カメラに向かう
-		Vector3 lookAtPos = this.transform.position + m_mainCamera.transform.rotation * Vector3.forward;
-		lookAtPos.y = 0;
-		this.transform.LookAt(lookAtPos, Vector3.up);
-
 		if (mAg.corners.Length > 0) {
 			mNextPos = updatePosition (mNextPos);
 		}
@@ -173,10 +168,7 @@ public class NpcBase : MonoBehaviour {
 	
 	public void KillMe()
 	{
-		if (m_npcSpriteObject)
-		{
-			m_npcSpriteObject.GetComponent<Animator>().SetBool("IsDead", true);
-		}
+		NpcSpriteContainer.GetComponent<NpcSpriteController>().IsDead();
 	}
 	
 	private Transform getNearestEm (Vector3 _pos, float _minDist, float _maxDist){
@@ -198,12 +190,10 @@ public class NpcBase : MonoBehaviour {
 	protected virtual bool updateAI(){
 		mTempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
 		if (mTempDestTr != null) {
-			m_stoppingDist = 0f;
 			mDestinationPos = mTempDestTr.position;
 		}
 		else
 		{
-			m_stoppingDist = 0.75f;
 			mDestinationPos = destTr.position;
 		}
 		if(mTempDestTr!=null){
@@ -213,7 +203,7 @@ public class NpcBase : MonoBehaviour {
 			}
 			else if ((transform.position - mTempDestTr.position).magnitude < 0.5f)
 			{
-				m_npcSpriteObject.GetComponent<Animator>().SetBool("IsHit", true);
+				NpcSpriteContainer.GetComponent<NpcSpriteController>().IsHit();
 			}
 		}
 		return true;
@@ -225,7 +215,7 @@ public class NpcBase : MonoBehaviour {
 		return _nextPos;
 
 
-		Vector3 ret = _nextPos;
+		/*Vector3 ret = _nextPos;
 		Vector3 dir = mAg.position - transform.position;
 		if (dir.magnitude < mAg.speed) {
 			Vector3 nextPos = transform.position + dir.normalized * mAg.speed * Time.deltaTime;
@@ -234,15 +224,33 @@ public class NpcBase : MonoBehaviour {
 				ret = mAg.corners[mAg.cornerPtr];
 			}
 		}
-		return ret;
+		return ret;*/
+	}
+
+	public void SetDestination(Vector3 dest)
+	{
+		mDestinationPos = dest;
+	}
+
+	public void SetSelectedUI(GameObject selectedUiObj)
+	{
+		m_selectedUI = Instantiate(selectedUiObj) as GameObject;
+		m_selectedUI.transform.SetParent(this.gameObject.transform, true);
+		m_selectedUI.transform.localPosition = Vector3.zero;
+	}
+
+	public void RemoveSelectedUI()
+	{
+		Destroy(m_selectedUI.gameObject);
 	}
 
 	//--------------
 	private void SM_initializeNpcSprite()
 	{
-		m_npcSpriteObject = Instantiate(NpcSpriteObject) as GameObject;
-		m_npcSpriteObject.transform.localScale = this.transform.localScale;
+		/*m_npcSpriteObject = Instantiate(NpcSpriteObject) as GameObject;
 		m_npcSpriteObject.transform.parent = this.gameObject.transform;
+		m_npcSpriteObject.transform.localPosition = Vector3.zero;
+		m_npcSpriteObject.transform.localScale = Vector3.one;*/
 	}
 	
 	private void SM_setGenerator(GameObject _genObj){
@@ -263,10 +271,6 @@ public class NpcBase : MonoBehaviour {
 	}
 	private void SM_setEquipType( NpcGenerator.EquipType _equipType){}
 	private void SM_setTeam(NpcGenerator.NpcTeam _team)	{}
-	private void SM_setColor(Color color)
-	{
-		m_npcSpriteObject.renderer.material.color = color;
-	}
 	private void SM_setSpriteInfo(NpcGenerator.NpcSpriteInfo _info)
 	{
 		mSpriteInfo = _info;

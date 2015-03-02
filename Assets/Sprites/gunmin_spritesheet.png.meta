@@ -8,8 +8,9 @@ TextureImporter:
     21300006: gunmin_04
     21300008: gunmin_05
     21300010: gunmin_06
-    21300012: gunmin_spritesheet_6
+    21300012: selectCircle
     21300014: gunmin_spritesheet_7
+    21300016: moveArrow
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -45,7 +46,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 25
+  spritePixelsToUnits: 250
   alphaIsTransparency: 1
   textureType: 8
   buildTargetSettings: []
@@ -59,7 +60,7 @@ TextureImporter:
         width: 64
         height: 128
       alignment: 9
-      pivot: {x: .375055701, y: .0403838158}
+      pivot: {x: .375082016, y: .0332019329}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_02
       rect:
@@ -69,7 +70,7 @@ TextureImporter:
         width: 64
         height: 128
       alignment: 9
-      pivot: {x: .321508288, y: .0403838158}
+      pivot: {x: .315910578, y: .0364892483}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_03
       rect:
@@ -79,17 +80,17 @@ TextureImporter:
         width: 64
         height: 128
       alignment: 9
-      pivot: {x: .553547382, y: .0582330227}
+      pivot: {x: .532872915, y: .0496385098}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_04
       rect:
         serializedVersion: 2
-        x: 191
+        x: 192
         y: 128
         width: 64
         height: 128
       alignment: 9
-      pivot: {x: .339357376, y: .0403838158}
+      pivot: {x: .315910339, y: .0332019329}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_05
       rect:
@@ -99,7 +100,7 @@ TextureImporter:
         width: 64
         height: 128
       alignment: 9
-      pivot: {x: .294734418, y: .0403837636}
+      pivot: {x: .289611936, y: .0299145002}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: gunmin_06
       rect:
@@ -109,7 +110,27 @@ TextureImporter:
         width: 64
         height: 128
       alignment: 9
-      pivot: {x: .312583685, y: .0493083484}
+      pivot: {x: .309335947, y: .03320181}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: moveArrow
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 7
+      pivot: {x: .5, y: 0}
+      border: {x: 1, y: 0, z: 1, w: 36}
+    - name: selectCircle
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

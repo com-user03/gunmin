@@ -31,7 +31,7 @@ public class NpcGenerator : MonoBehaviour {
 		Trooper2 = 3,
 		Trooper3 = 4,
 	}
-	private static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
+	public static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
 	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
     
     //private int m_guiButtonWidth;
@@ -207,7 +207,7 @@ public class NpcGenerator : MonoBehaviour {
 
 		GameObject npc = GameObject.Instantiate (mNpcPrefab) as GameObject;
 		npc.name = nameArr [id];
-		npc.transform.position = npcGpInfo[id].spawnTr.position + Vector3.up * 0.5f;
+		npc.transform.position = npcGpInfo[id].spawnTr.position;
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
 		npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);

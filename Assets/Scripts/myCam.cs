@@ -38,7 +38,7 @@ public class myCam : MonoBehaviour {
         }
 
         // 移動機能（マウス）
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(1))
         {
             if (m_isDragToMove)
             {
@@ -48,12 +48,12 @@ public class myCam : MonoBehaviour {
             }
         }
         
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             m_isDragToMove = true;
             m_movePosOrigin = Camera.main.ScreenToWorldPoint(Input.mousePosition + Vector3.forward * 10);
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButtonUp(1))
         {
             m_isDragToMove = false;
         }
