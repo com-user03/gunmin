@@ -7,57 +7,6 @@ public class NpcBase : MonoBehaviour {
 	private const float NEAR_RANGE_SQ = 0.5f*0.5f;
 	private const float DEF_SPEED = 0.4f;
 
-	public class MyAgent{
-		private NavMeshPath mPath;
-		private Vector3[] mCorners;
-		private int mCornerPtr;
-		private Vector3 mPosition;
-		public Vector3[] corners { get { return mCorners; } }
-		public int cornerPtr { get { return mCornerPtr; } }
-		public Vector3 position { get { return mPosition; } }
-		public float speed { get; set; }
-		public int layerMask { get; set; }
-
-		public MyAgent(){
-			mPath = new NavMeshPath();
-			mCorners = new Vector3[0];
-			speed = 0f;
-			layerMask = 0;
-		}
-		public bool CalculatePath(Vector3 _srcPos, Vector3 _tgtPos, int _mask){
-			bool ret = false;
-			if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
-				mCorners = mPath.corners;
-				mCornerPtr = 0;
-				mPosition = _srcPos;
-				if(mCorners.Length>0){
-					ret = true;
-				}
-			}
-			return ret;
-		}
-		public bool UpdatePosition(){
-			bool ret = false;
-			if ((mCorners != null) && (mCorners.Length > mCornerPtr) ) {
-				if(mCornerPtr<mCorners.Length){
-					Vector3 tgtPos = mCorners[mCornerPtr];
-					Vector3 dir = tgtPos - mPosition;
-					float spd = Mathf.Min (dir.magnitude,speed*Time.deltaTime);
-					mPosition += dir.normalized * spd;
-					if(spd==0f){
-						if(mCornerPtr < (mCorners.Length-1) ){
-							mCornerPtr++;
-							ret = true;
-						}
-					}else{
-						ret = true;
-					}
-				}
-			}
-			return ret;
-		}
-	}
-
 	public Transform destTr;
 	private Transform mTempDestTr;
 	protected float mDefSpeed;
@@ -128,7 +77,8 @@ public class NpcBase : MonoBehaviour {
 
 		mAg.speed = DEF_SPEED * (0.8f + Random.value * 0.4f);
 		mDefSpeed = mAg.speed;
-		mAg.CalculatePath(transform.position,destTr.position,mAg.layerMask);
+		mAg.layerMask = mLayerMask;
+		mAg.CalculatePath(transform.position,destTr.position);
 		
 		UnitCreatedEvent();
 	}
@@ -142,7 +92,8 @@ public class NpcBase : MonoBehaviour {
 			if(NavMesh.Raycast(tmpPos-tmpOfs,tmpPos+tmpOfs,out hit,mAg.layerMask)){
 				tmpPos = hit.position;
 			}
-			mAg.CalculatePath(tmpPos,mDestinationPos,mLayerMask);
+			mAg.layerMask = mLayerMask;
+			mAg.CalculatePath(tmpPos,mDestinationPos);
 		}
 
 		bool ck = (mAg.corners==null);
@@ -152,7 +103,8 @@ public class NpcBase : MonoBehaviour {
 		if (ck) {
 			updateAI();
 			pos = transform.position;
-			mAg.CalculatePath(transform.position,mDestinationPos,mLayerMask);
+			mAg.layerMask = mLayerMask;
+			mAg.CalculatePath(transform.position,mDestinationPos);
 		}
 
 		if (mAg.corners.Length > 0) {
@@ -163,7 +115,10 @@ public class NpcBase : MonoBehaviour {
 		if ((transform.position - destTr.position).sqrMagnitude < 2f) {
 			KillMe();
 		}
-		debugCourseDisp ();
+
+		if (mAg != null) {
+			mAg.debugCourseDisp (Color.red, Color.blue);
+		}
 	}
 	
 	public void KillMe()
@@ -212,19 +167,14 @@ public class NpcBase : MonoBehaviour {
 	private Vector3 updatePosition(Vector3 _nextPos){
 		mAg.UpdatePosition ();
 		transform.position = mAg.position;
-		return _nextPos;
-
-
-		/*Vector3 ret = _nextPos;
-		Vector3 dir = mAg.position - transform.position;
-		if (dir.magnitude < mAg.speed) {
-			Vector3 nextPos = transform.position + dir.normalized * mAg.speed * Time.deltaTime;
-			gameObject.rigidbody.MovePosition (nextPos+Vector3.up*UP_OFS);
-			if (mAg.corners.Length > mAg.cornerPtr) {
-				ret = mAg.corners[mAg.cornerPtr];
-			}
+		/*
+		RaycastHit hit;
+		Ray ray = new Ray (transform.position + Vector3.up*UP_OFS, mAg.position - transform.position);
+		if (Physics.Raycast (ray, out hit)) {
+			transform.position = hit.point;
 		}
-		return ret;*/
+		*/
+		return _nextPos;
 	}
 
 	public void SetDestination(Vector3 dest)
@@ -282,20 +232,6 @@ public class NpcBase : MonoBehaviour {
 	{
 		UnitRemovedEvent();
 		mGenScr.gameObject.SendMessage ("SM_removeNpc", this.gameObject);
-	}
-
-	//----------------------
-	private void debugCourseDisp(){
-		Debug.DrawLine (transform.position - Vector3.up, transform.position + Vector3.up, Color.white);
-		if ((mAg != null)&&(mAg.corners.Length>0)) {
-			Vector3 sttPos = transform.position+Vector3.up*UP_OFS;
-			for (int ii = 0; ii < mAg.corners.Length; ++ii) {
-				float rate = ((float)ii/(float)mAg.corners.Length);
-				Vector3 pos = mAg.corners [ii]+Vector3.up*UP_OFS;
-				Debug.DrawLine (sttPos, pos, Color.Lerp(Color.red,Color.blue,rate));
-				sttPos = pos;
-			}
-		}
 	}
 
 }
