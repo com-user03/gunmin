@@ -76,10 +76,10 @@ public class SelectionManager : MonoBehaviour {
 				if (distance <= selectRadius)
 				{
 					m_selectedObjects.Add(npcObj);
-				}
 
-				//　選択したnpcのＵＩ表示
-				npcObj.GetComponent<NpcBase>().SetSelectedUI(m_npcSelectedObj);
+					//　選択したnpcのＵＩ表示
+					npcObj.GetComponent<NpcBase>().SetSelectedUI(m_npcSelectedObj);
+				}
 			}
         }
 		else if (Input.GetMouseButton(0))

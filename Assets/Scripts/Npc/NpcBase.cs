@@ -19,6 +19,8 @@ public class NpcBase : MonoBehaviour {
 	private NpcGenerator mGenScr;
 	protected float mCkDistMin,mCkDistMax;
 	protected Transform mTargetTr;
+	protected bool m_hasMoveTargetPos;
+	protected Vector3 m_moveTargetPos;
 	protected Vector3 mDestinationPos;
 	protected Vector3 mNextPos;
 	protected NpcGenerator.NpcTeam mTeam;
@@ -64,6 +66,11 @@ public class NpcBase : MonoBehaviour {
 				tmpPos = hit.position;
 			}
 			mAg.CalculatePath(tmpPos,mDestinationPos);
+		}
+		else if (m_hasMoveTargetPos && (transform.position - mDestinationPos).magnitude < 0.1f)
+		{
+			m_hasMoveTargetPos = false;
+			mAIUpdateFlag = true;
 		}
 
 		mAIUpdateFlag |= (mAg.corners==null);
@@ -115,8 +122,7 @@ public class NpcBase : MonoBehaviour {
 		if (tempDestTr != null) {
 			mTargetTr = tempDestTr;
 			mDestinationPos = tempDestTr.position;
-		}
-		if(tempDestTr!=null){
+
 			if ((transform.position - tempDestTr.position).magnitude < 0.2f) {
 				KillMe();
 				return false;
@@ -125,6 +131,15 @@ public class NpcBase : MonoBehaviour {
 			{
 				NpcSpriteContainer.GetComponent<NpcSpriteController>().IsHit();
 			}
+		}
+		else if (m_hasMoveTargetPos)
+		{
+			mDestinationPos = m_moveTargetPos;
+		}
+		else
+		{
+			mDestinationPos = destTr.position;
+			mNextPos = destTr.position;
 		}
 		return true;
 	}
@@ -188,6 +203,8 @@ public class NpcBase : MonoBehaviour {
 	public void SetDestination(Vector3 dest)
 	{
 		mDestinationPos = dest;
+		m_moveTargetPos = dest;
+		m_hasMoveTargetPos = true;
 		mTargetTr = null;
 		mAIUpdateFlag = true;
 	}
