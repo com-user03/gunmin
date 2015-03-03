@@ -8,9 +8,13 @@ public class NpcBase : MonoBehaviour {
 	private const float DEF_SPEED = 0.4f;
 
 	public Transform destTr;
-	private Transform mTempDestTr;
+	public Sprite EnemySprite;
+	public int layerMask {
+		get { return (mAg!=null) ? mAg.layerMask : 0; }
+		set { if(mAg!=null){ mAg.layerMask = value; } }
+	}
+
 	protected float mDefSpeed;
-	protected int mLayerMask;
 	private NpcGenerator.EquipType mEquipType;
 	private NpcGenerator mGenScr;
 	protected float mCkDistMin,mCkDistMax;
@@ -18,10 +22,10 @@ public class NpcBase : MonoBehaviour {
 	protected Vector3 mNextPos;
 	protected NpcGenerator.NpcTeam mTeam;
 	protected NpcGenerator.NpcSpriteInfo mSpriteInfo;
-	public Sprite EnemySprite;
+
 
 	// for myAgent
-	protected MyAgent mAg = new MyAgent ();
+	protected MyAgent mAg;
 
 	private Camera m_mainCamera;
 	
@@ -36,50 +40,13 @@ public class NpcBase : MonoBehaviour {
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
 	virtual public void Awake(){
-		mLayerMask = 0;
-
 		m_mainCamera = Camera.main;
+		mAg = new MyAgent ();
 	}
 	
 	// Use this for initialization
 	virtual public void Start () {
-
-		bool isEnemy = (mTeam != NpcGenerator.NpcTeam.Red);
-		switch (mEquipType)
-		{
-		default:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case  NpcGenerator.EquipType.Trooper:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case  NpcGenerator.EquipType.Archer:
-			mCkDistMin = 4f;
-			mCkDistMax = 6f;
-			break;
-		case  NpcGenerator.EquipType.Guardian:
-			mCkDistMin = 0f;
-			mCkDistMax = 0.5f;
-			break;
-		case  NpcGenerator.EquipType.Trooper2:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case  NpcGenerator.EquipType.Trooper3:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		}
-		Sprite npcSprite = (isEnemy) ? EnemySprite : mSpriteInfo.sprite;
-		NpcSpriteContainer.GetComponent<NpcSpriteController>().SetSprite(npcSprite);
-
-		mAg.speed = DEF_SPEED * (0.8f + Random.value * 0.4f);
-		mDefSpeed = mAg.speed;
-		mAg.layerMask = mLayerMask;
-		mAg.CalculatePath(transform.position,destTr.position);
-		
+		prepareParam ();
 		UnitCreatedEvent();
 	}
 	
@@ -92,7 +59,6 @@ public class NpcBase : MonoBehaviour {
 			if(NavMesh.Raycast(tmpPos-tmpOfs,tmpPos+tmpOfs,out hit,mAg.layerMask)){
 				tmpPos = hit.position;
 			}
-			mAg.layerMask = mLayerMask;
 			mAg.CalculatePath(tmpPos,mDestinationPos);
 		}
 
@@ -103,7 +69,6 @@ public class NpcBase : MonoBehaviour {
 		if (ck) {
 			updateAI();
 			pos = transform.position;
-			mAg.layerMask = mLayerMask;
 			mAg.CalculatePath(transform.position,mDestinationPos);
 		}
 
@@ -143,20 +108,21 @@ public class NpcBase : MonoBehaviour {
 	}
 
 	protected virtual bool updateAI(){
-		mTempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
-		if (mTempDestTr != null) {
-			mDestinationPos = mTempDestTr.position;
+		Transform tempDestTr;
+		tempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
+		if (tempDestTr != null) {
+			mDestinationPos = tempDestTr.position;
 		}
 		else
 		{
 			mDestinationPos = destTr.position;
 		}
-		if(mTempDestTr!=null){
-			if ((transform.position - mTempDestTr.position).magnitude < 0.2f) {
+		if(tempDestTr!=null){
+			if ((transform.position - tempDestTr.position).magnitude < 0.2f) {
 				KillMe();
 				return false;
 			}
-			else if ((transform.position - mTempDestTr.position).magnitude < 0.5f)
+			else if ((transform.position - tempDestTr.position).magnitude < 0.5f)
 			{
 				NpcSpriteContainer.GetComponent<NpcSpriteController>().IsHit();
 			}
@@ -165,11 +131,13 @@ public class NpcBase : MonoBehaviour {
 	}
 	
 	protected virtual Vector3 updatePosition(Vector3 _nextPos){
-		mAg.UpdatePosition ();
 		Vector3 dir = mAg.position - transform.position;
-//		dir.y = 0f;
-//		gameObject.rigidbody.AddForce (dir, ForceMode.VelocityChange);
+		dir.y = 0f;
 		gameObject.rigidbody.MovePosition (transform.position + dir);
+
+		if (dir.sqrMagnitude < NEAR_RANGE_SQ) {
+			mAg.UpdatePosition ();
+		}
 
 		/*
 		RaycastHit hit;
@@ -179,6 +147,43 @@ public class NpcBase : MonoBehaviour {
 		}
 		*/
 		return mAg.position;
+	}
+
+	private void prepareParam(){
+		bool isEnemy = (mTeam != NpcGenerator.NpcTeam.Red);
+		switch (mEquipType)
+		{
+		default:
+			mCkDistMin = 0f;
+			mCkDistMax = 2.0f;
+			break;
+		case  NpcGenerator.EquipType.Trooper:
+			mCkDistMin = 0f;
+			mCkDistMax = 2.0f;
+			break;
+		case  NpcGenerator.EquipType.Archer:
+			mCkDistMin = 4f;
+			mCkDistMax = 6f;
+			break;
+		case  NpcGenerator.EquipType.Guardian:
+			mCkDistMin = 0f;
+			mCkDistMax = 0.5f;
+			break;
+		case  NpcGenerator.EquipType.Trooper2:
+			mCkDistMin = 0f;
+			mCkDistMax = 2.0f;
+			break;
+		case  NpcGenerator.EquipType.Trooper3:
+			mCkDistMin = 0f;
+			mCkDistMax = 2.0f;
+			break;
+		}
+		Sprite npcSprite = (isEnemy) ? EnemySprite : mSpriteInfo.sprite;
+		NpcSpriteContainer.GetComponent<NpcSpriteController>().SetSprite(npcSprite);
+		
+		mAg.speed = DEF_SPEED * (0.8f + Random.value * 0.4f);
+		mDefSpeed = mAg.speed;
+		mAg.CalculatePath(transform.position,destTr.position);
 	}
 
 	public void SetDestination(Vector3 dest)
@@ -212,13 +217,19 @@ public class NpcBase : MonoBehaviour {
 	}
 	private void SM_setDest(Transform _tr){
 		destTr = _tr;
-		mTempDestTr = destTr;
 	}
 	private void SM_addNaviLayer(string _layerStr){
 		int layer = NavMesh.GetNavMeshLayerFromName(_layerStr);
 		if (layer >= 0) {
-			mLayerMask |= (1 << layer);
 			mAg.layerMask |= (1 << layer);
+		} else {
+			Debug.Log("warning: bad layer name.");
+		}
+	}
+	private void SM_removeNaviLayer(string _layerStr){
+		int layer = NavMesh.GetNavMeshLayerFromName(_layerStr);
+		if (layer >= 0) {
+			mAg.layerMask &= ~(1 << layer);
 		} else {
 			Debug.Log("warning: bad layer name.");
 		}
