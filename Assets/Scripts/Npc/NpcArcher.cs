@@ -12,8 +12,8 @@ public class NpcArcher : NpcBase {
 	virtual public void Start () {
 		base.Start ();
 		mDefSpeed = 2.0f * (0.8f + Random.value * 0.4f);
-		mCkDistMin = 15f;
-		mCkDistMax = 30f;
+		mCkDistMin = 4f;
+		mCkDistMax = 8f;
 	}
 	
 	// Update is called once per frame
@@ -24,7 +24,9 @@ public class NpcArcher : NpcBase {
 	override protected bool updateAI(){
 		if (base.updateAI ()) {
 			if(Random.value>0.95f){
-				setArrow(destTr,5f); //仮 
+				if(mTargetTr!=null){
+					setArrow(mTargetTr,5f); //仮 
+				}
 			}
 		}
 		return true;
@@ -37,7 +39,13 @@ public class NpcArcher : NpcBase {
 	private bool setArrow(Transform _tgtTr, float _arrowSpd){
 		bool ret = false;
 		Vector3 _pos = _tgtTr.transform.position;
-		Vector3 npcSpdVec = Vector3.zero; //仮 
+		Vector3 npcSpdVec = Vector3.zero;
+		if (_tgtTr != null){
+			Rigidbody rb = _tgtTr.GetComponent<Rigidbody> ();
+			if(rb!=null){
+				npcSpdVec = rb.velocity;
+			}
+		}
 		float[] time = TmMath.CollideTime (_pos, npcSpdVec, transform.position, _arrowSpd);
 		if (time != null) {
 			//			Debug.Log ("reachTIme=" + time [0]);

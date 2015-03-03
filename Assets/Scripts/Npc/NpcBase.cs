@@ -18,10 +18,12 @@ public class NpcBase : MonoBehaviour {
 	private NpcGenerator.EquipType mEquipType;
 	private NpcGenerator mGenScr;
 	protected float mCkDistMin,mCkDistMax;
+	protected Transform mTargetTr;
 	protected Vector3 mDestinationPos;
 	protected Vector3 mNextPos;
 	protected NpcGenerator.NpcTeam mTeam;
 	protected NpcGenerator.NpcSpriteInfo mSpriteInfo;
+	private bool mAIUpdateFlag;
 
 
 	// for myAgent
@@ -46,6 +48,8 @@ public class NpcBase : MonoBehaviour {
 	
 	// Use this for initialization
 	virtual public void Start () {
+		mTargetTr = null;
+		mAIUpdateFlag = false;
 		prepareParam ();
 		UnitCreatedEvent();
 	}
@@ -62,13 +66,11 @@ public class NpcBase : MonoBehaviour {
 			mAg.CalculatePath(tmpPos,mDestinationPos);
 		}
 
-		bool ck = (mAg.corners==null);
-
-		Vector3 pos = mNextPos;
-		ck |= (Random.value < 0.01f);
-		if (ck) {
+		mAIUpdateFlag |= (mAg.corners==null);
+		mAIUpdateFlag |= (Random.value < 0.01f);
+		if (mAIUpdateFlag) {
+			mAIUpdateFlag = false;
 			updateAI();
-			pos = transform.position;
 			mAg.CalculatePath(transform.position,mDestinationPos);
 		}
 
@@ -111,11 +113,8 @@ public class NpcBase : MonoBehaviour {
 		Transform tempDestTr;
 		tempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
 		if (tempDestTr != null) {
+			mTargetTr = tempDestTr;
 			mDestinationPos = tempDestTr.position;
-		}
-		else
-		{
-			mDestinationPos = destTr.position;
 		}
 		if(tempDestTr!=null){
 			if ((transform.position - tempDestTr.position).magnitude < 0.2f) {
@@ -189,6 +188,8 @@ public class NpcBase : MonoBehaviour {
 	public void SetDestination(Vector3 dest)
 	{
 		mDestinationPos = dest;
+		mTargetTr = null;
+		mAIUpdateFlag = true;
 	}
 
 	public void SetSelectedUI(GameObject selectedUiObj)
