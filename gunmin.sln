@@ -5,6 +5,8 @@ Project("{88D7608A-5A04-5B80-C2FA-E442CA26EAB7}") = "gunmin", "Assembly-CSharp-f
 EndProject
 Project("{88D7608A-5A04-5B80-C2FA-E442CA26EAB7}") = "gunmin", "Assembly-CSharp.csproj", "{14598EAC-05E2-691D-07F0-F388F51DA716}"
 EndProject
+Project("{88D7608A-5A04-5B80-C2FA-E442CA26EAB7}") = "gunmin", "Assembly-CSharp-Editor.csproj", "{1C30335F-AE1B-F867-01EE-BCAEB543F63F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,11 +21,15 @@ Global
 		{14598EAC-05E2-691D-07F0-F388F51DA716}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14598EAC-05E2-691D-07F0-F388F51DA716}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14598EAC-05E2-691D-07F0-F388F51DA716}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C30335F-AE1B-F867-01EE-BCAEB543F63F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C30335F-AE1B-F867-01EE-BCAEB543F63F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C30335F-AE1B-F867-01EE-BCAEB543F63F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C30335F-AE1B-F867-01EE-BCAEB543F63F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																																									GlobalSection(MonoDevelopProperties) = preSolution
+																																																			GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
