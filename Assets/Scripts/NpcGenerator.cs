@@ -32,6 +32,7 @@ public class NpcGenerator : MonoBehaviour {
 		Trooper3 = 4,
 	}
 	public static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
+	public static string[] navLayerArr = new string[4] { "Default", "layerHill", "layerBridgeRed", "layerBridgeBlue" };
 	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
     
     //private int m_guiButtonWidth;
@@ -210,18 +211,38 @@ public class NpcGenerator : MonoBehaviour {
 		npc.transform.position = npcGpInfo[id].spawnTr.position;
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
-		npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
+		//npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
 		npc.SendMessage ("SM_setDest", npcGpInfo[id].destTr);
 		npc.SendMessage("SM_setSpriteInfo", npcSpriteInfo[sprInfoId]);
 		//npc.SendMessage("SM_setColor", npcGpInfo [id].color);
+		SetNpcNaviLayer(npc);
 
 		// add to list
 		mNpcListArr[id].Add(npc);
+	}
 
-		npc.SendMessage ("SM_addNaviLayer","Default");
-		if (Random.value < 0.5f) {
-			npc.SendMessage ("SM_addNaviLayer","layerHill");
+	private void SetNpcNaviLayer(GameObject npc)
+	{
+		npc.SendMessage("SM_addNaviLayer", "Default");
+
+		foreach (string layerStr in navLayerArr)
+		{
+			if (layerStr == "Default" || Random.value < 0.5f)
+			{
+				npc.SendMessage("SM_addNaviLayer", layerStr);
+			}
 		}
+	}
+
+	public static int GetAllLayerMask()
+	{
+		int allLayerMask = 0;
+		foreach (string layerStr in navLayerArr)
+		{
+			int layer = NavMesh.GetNavMeshLayerFromName(layerStr);
+			allLayerMask |= (1 << layer);
+		}
+		return allLayerMask;
 	}
 
 	//--------------------

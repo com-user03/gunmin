@@ -27,6 +27,7 @@ public class SelectionManager : MonoBehaviour {
 	private float m_canvasReferenceResolutionRatio;
 
 	private List<GameObject> m_selectedObjects;
+	public static bool IsNpcSelected;
 
 	// Use this for initialization
 	void Start () {
@@ -52,83 +53,118 @@ public class SelectionManager : MonoBehaviour {
 
 		Vector3 mousePos = Input.mousePosition;
 
-        // ズーム機能（マウス）
-        if (Input.mouseScrollDelta.y != 0)
-        {
-        }
-
         // 移動機能（マウス）
         if (Input.GetMouseButtonDown(0))
         {
-            DisplaySelectionCircle(mousePos);
-            m_selectPosOrigin = mousePos;
-
-			//　npcを選択する
-			m_selectedObjects = new List<GameObject>();
-			List<GameObject> npcList = m_npcGenerator.GetEnemyListByMyName(NpcGenerator.nameArr[1]);
-			RectTransform selectCircle = m_selectionCircleObj.GetComponent<RectTransform>();
-			foreach (GameObject npcObj in npcList)
-			{
-				Vector3 npcScreenPos = Camera.main.WorldToScreenPoint(npcObj.transform.position);
-				npcScreenPos.z = 0;
-				float distance = (npcScreenPos - m_selectPosOrigin).sqrMagnitude;
-				float selectRadius = selectCircle.rect.width;
-				if (distance <= selectRadius)
-				{
-					m_selectedObjects.Add(npcObj);
-
-					//　選択したnpcのＵＩ表示
-					npcObj.GetComponent<NpcBase>().SetSelectedUI(m_npcSelectedObj);
-				}
-			}
+			DisplaySelectionCircle(mousePos);
+			SelectNPC(mousePos);
         }
 		else if (Input.GetMouseButton(0))
 		{
-			float moveDistance = Vector3.Distance(mousePos, m_selectPosOrigin);
-			if (moveDistance > MIN_MOVE_DISTANCE)
-			{
-				// 矢印の表示
-				DisplayMoveArrow(m_selectPosOrigin);
-
-				RectTransform rectTr = m_moveArrowObj.GetComponent<RectTransform>();
-				float angle = Vector3.Angle(Vector3.up, mousePos - m_selectPosOrigin);
-				angle *= Mathf.Sign(Vector3.Cross(Vector3.up, mousePos - m_selectPosOrigin).z);
-				rectTr.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-				rectTr.sizeDelta = new Vector2(rectTr.sizeDelta.x, moveDistance * m_canvasReferenceResolutionRatio / rectTr.localScale.x);
-			}
+			UpdateMoveArrow(mousePos);
 		}
         else if (Input.GetMouseButtonUp(0))
         {
-			m_selectPosDestination = mousePos;
-			
-            HideSelectionCircle();
-            HideMoveArrow();
+			MoveNPC(mousePos);
+			HideMoveArrow();
 			ShowMoveSelectedUI(m_selectPosDestination);
-
-			foreach (GameObject npc in m_selectedObjects)
-			{
-				RaycastHit hit;
-				Ray ray = Camera.main.ScreenPointToRay(m_selectPosDestination);
-				if (Physics.Raycast(ray, out hit))
-				{
-					npc.GetComponent<NpcBase>().SetDestination(hit.point);
-				}
-				npc.GetComponent<NpcBase>().RemoveSelectedUI();
-			}
-        }
-
-        if (Input.GetMouseButton(2))
-        {
+			HideSelectionCircle();
         }
 #endif
 
 #if !(UNITY_STANDALONE && UNITY_WEBPLAYER)
-        // 携帯端末のズーム機能
-        if (Input.touches.Length > 0)
+        // 携帯端末のnpc選択機能
+		if (Input.touchCount == 1)
         {
-            Touch touchZero = Input.GetTouch(0);
+            Vector3 touchPos = Input.GetTouch(0).position;
+
+			if (Input.GetTouch(0).phase == TouchPhase.Began)
+			{
+				DisplaySelectionCircle(touchPos);
+				SelectNPC(touchPos);
+			}
+			else if (m_selectedObjects.Count > 0)
+			{
+				if (Input.GetTouch(0).phase == TouchPhase.Moved)
+				{
+					UpdateMoveArrow(touchPos);
+				}
+				else if (Input.GetTouch(0).phase == TouchPhase.Ended)
+				{
+					MoveNPC(touchPos);
+					HideMoveArrow();
+					ShowMoveSelectedUI(m_selectPosDestination);
+				}
+			}
+
+			if (Input.GetTouch(0).phase == TouchPhase.Ended)
+			{
+				HideSelectionCircle();
+			}
         }
 #endif
+	}
+
+	private void SelectNPC(Vector3 selectPos)
+	{
+		//　npcを選択する
+		m_selectPosOrigin = selectPos;
+		m_selectedObjects = new List<GameObject>();
+		List<GameObject> npcList = m_npcGenerator.GetEnemyListByMyName(NpcGenerator.nameArr[1]);
+		RectTransform selectCircle = m_selectionCircleObj.GetComponent<RectTransform>();
+		foreach (GameObject npcObj in npcList)
+		{
+			Vector3 npcScreenPos = Camera.main.WorldToScreenPoint(npcObj.transform.position);
+			npcScreenPos.z = 0;
+			float distance = (npcScreenPos - m_selectPosOrigin).sqrMagnitude;
+			float selectRadius = selectCircle.rect.width * 2.5f;
+			if (distance <= selectRadius)
+			{
+				m_selectedObjects.Add(npcObj);
+
+				//　選択したnpcのＵＩ表示
+				npcObj.GetComponent<NpcBase>().SetSelectedUI(m_npcSelectedObj);
+			}
+		}
+
+		if (m_selectedObjects.Count > 0)
+		{
+			IsNpcSelected = true;
+		}
+	}
+
+	private void UpdateMoveArrow(Vector3 movePos)
+	{
+		float moveDistance = Vector3.Distance(movePos, m_selectPosOrigin);
+		if (moveDistance > MIN_MOVE_DISTANCE)
+		{
+			// 矢印の表示
+			DisplayMoveArrow(m_selectPosOrigin);
+
+			RectTransform rectTr = m_moveArrowObj.GetComponent<RectTransform>();
+			float angle = Vector3.Angle(Vector3.up, movePos - m_selectPosOrigin);
+			angle *= Mathf.Sign(Vector3.Cross(Vector3.up, movePos - m_selectPosOrigin).z);
+			rectTr.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+			rectTr.sizeDelta = new Vector2(rectTr.sizeDelta.x, moveDistance * m_canvasReferenceResolutionRatio / rectTr.localScale.x);
+		}
+	}
+
+	private void MoveNPC(Vector3 targetPos)
+	{
+		m_selectPosDestination = targetPos;
+
+		foreach (GameObject npc in m_selectedObjects)
+		{
+			RaycastHit hit;
+			Ray ray = Camera.main.ScreenPointToRay(m_selectPosDestination);
+			if (Physics.Raycast(ray, out hit))
+			{
+				npc.GetComponent<NpcBase>().SetDestination(hit.point);
+			}
+			npc.GetComponent<NpcBase>().RemoveSelectedUI();
+		}
+
+		IsNpcSelected = false;
 	}
 
     private void DisplaySelectionCircle(Vector3 position)

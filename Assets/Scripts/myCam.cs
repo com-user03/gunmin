@@ -82,7 +82,7 @@ public class myCam : MonoBehaviour {
                     }
                 }
 
-                if (Input.GetTouch(0).phase == TouchPhase.Began)
+                if (Input.GetTouch(0).phase == TouchPhase.Began && !SelectionManager.IsNpcSelected)
                 {
                     m_isDragToMove = true;
                     m_movePosOrigin = Camera.main.ScreenToWorldPoint((Vector3)touchZero.position + Vector3.forward * 10);

@@ -202,6 +202,7 @@ public class NpcBase : MonoBehaviour {
 
 	public void SetDestination(Vector3 dest)
 	{
+		mAg.layerMask = NpcGenerator.GetAllLayerMask();
 		mDestinationPos = dest;
 		m_moveTargetPos = dest;
 		m_hasMoveTargetPos = true;
