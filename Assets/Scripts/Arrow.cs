@@ -5,7 +5,7 @@ public class Arrow : MonoBehaviour {
 	private float mNoHitTimer;
 	private float mLifeTimer;
 	void Awake () {
-		gameObject.collider.enabled = false;
+		gameObject.GetComponent<Collider>().enabled = false;
 	}
 	// Use this for initialization
 	void Start () {
@@ -24,12 +24,12 @@ public class Arrow : MonoBehaviour {
 		if (mNoHitTimer > 0f) {
 			mNoHitTimer -= Time.deltaTime;
 			if(mNoHitTimer<=0f){
-				gameObject.collider.enabled = true;
+				gameObject.GetComponent<Collider>().enabled = true;
 			}
 		}
 
-		if (gameObject.rigidbody.velocity.sqrMagnitude > 0.01f) {
-			transform.rotation = Quaternion.LookRotation (gameObject.rigidbody.velocity);
+		if (gameObject.GetComponent<Rigidbody>().velocity.sqrMagnitude > 0.01f) {
+			transform.rotation = Quaternion.LookRotation (gameObject.GetComponent<Rigidbody>().velocity);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class Arrow : MonoBehaviour {
 
 	private void debugDraw(){
 		Vector3 sttPos = transform.position;
-		Vector3 spd = gameObject.rigidbody.velocity;
+		Vector3 spd = gameObject.GetComponent<Rigidbody>().velocity;
 		float timer = mLifeTimer;
 		float divTime = 0.1f;
 		while(timer>0f){

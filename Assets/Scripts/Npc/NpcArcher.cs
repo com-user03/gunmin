@@ -56,8 +56,8 @@ public class NpcArcher : NpcBase {
 			GameObject bulletGo = GameObject.Instantiate (arrowPrefab) as GameObject;
 			bulletGo.transform.position = transform.position;
 			bulletGo.transform.rotation = Quaternion.FromToRotation(Vector3.forward,spdVec.normalized);
-			bulletGo.rigidbody.velocity=Vector3.zero;
-			bulletGo.rigidbody.AddForce(spdVec,ForceMode.VelocityChange);
+			bulletGo.GetComponent<Rigidbody>().velocity=Vector3.zero;
+			bulletGo.GetComponent<Rigidbody>().AddForce(spdVec,ForceMode.VelocityChange);
 			ret = true;
 		}
 		return ret;

@@ -32,7 +32,7 @@ public class NpcGenerator : MonoBehaviour {
 		Trooper3 = 4,
 	}
 	public static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
-	public static string[] navLayerArr = new string[4] { "Default", "layerHill", "layerBridgeRed", "layerBridgeBlue" };
+	public static string[] navLayerArr = new string[4] { "Walkable", "layerHill", "layerBridgeRed", "layerBridgeBlue" };
 	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
     
     //private int m_guiButtonWidth;
@@ -223,11 +223,11 @@ public class NpcGenerator : MonoBehaviour {
 
 	private void SetNpcNaviLayer(GameObject npc)
 	{
-		npc.SendMessage("SM_addNaviLayer", "Default");
+		npc.SendMessage("SM_addNaviLayer", "Walkable");
 
 		foreach (string layerStr in navLayerArr)
 		{
-			if (layerStr == "Default" || Random.value < 0.5f)
+			if (layerStr == "Walkable" || Random.value < 0.5f)
 			{
 				npc.SendMessage("SM_addNaviLayer", layerStr);
 			}

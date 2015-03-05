@@ -190,8 +190,8 @@ public class Npc : MonoBehaviour {
 			GameObject bulletGo = GameObject.Instantiate (arrowPrefab) as GameObject;
 			bulletGo.transform.position = transform.position;
 			bulletGo.transform.rotation = Quaternion.FromToRotation(Vector3.forward,spdVec.normalized);
-			bulletGo.rigidbody.velocity=Vector3.zero;
-			bulletGo.rigidbody.AddForce(spdVec,ForceMode.VelocityChange);
+			bulletGo.GetComponent<Rigidbody>().velocity=Vector3.zero;
+			bulletGo.GetComponent<Rigidbody>().AddForce(spdVec,ForceMode.VelocityChange);
 			Destroy (bulletGo, 2f);
 		}
 	}
@@ -226,7 +226,7 @@ public class Npc : MonoBehaviour {
     }
     private void SM_setColor(Color color)
     {
-        m_npcSpriteObject.renderer.material.color = color;
+        m_npcSpriteObject.GetComponent<Renderer>().material.color = color;
     }
 
 	private void SM_removeMe()

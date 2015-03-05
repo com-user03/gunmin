@@ -20,7 +20,6 @@ public class SelectionManager : MonoBehaviour {
     [SerializeField]
     private GameObject m_moveArrowObj;
 
-    private string m_playerTeamName;
     private Vector3 m_selectPosOrigin;
     private Vector3 m_selectPosDestination;
 	private const float MIN_MOVE_DISTANCE = 10;
@@ -31,8 +30,6 @@ public class SelectionManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        m_playerTeamName = m_npcGenerator.npcGpInfo[0].name;
-
         m_selectionCircleObj = Instantiate(m_selectionCircleObj) as GameObject;
         m_selectionCircleObj.transform.SetParent(this.transform, false);
         m_selectionCircleObj.SetActive(false);

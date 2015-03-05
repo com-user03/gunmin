@@ -30,13 +30,10 @@ public class NpcBase : MonoBehaviour {
 
 	// for myAgent
 	protected MyAgent mAg;
-
-	private Camera m_mainCamera;
 	
 	public GameObject NpcSpriteContainer;
 	private GameObject m_npcSpriteObject;
 	private GameObject m_selectedUI;
-	private int SPRITE_CHILD_INDEX = 0;
 
 	public delegate void UnitCreatedDelegate();
 	public static event UnitCreatedDelegate UnitCreatedEvent;
@@ -44,7 +41,6 @@ public class NpcBase : MonoBehaviour {
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
 	virtual public void Awake(){
-		m_mainCamera = Camera.main;
 		mAg = new MyAgent ();
 	}
 	
@@ -90,9 +86,11 @@ public class NpcBase : MonoBehaviour {
 			KillMe();
 		}
 
+#if UNITY_EDITOR
 		if (mAg != null) {
 			mAg.debugCourseDisp (Color.red, Color.blue);
 		}
+#endif
 	}
 	
 	public void KillMe()
@@ -147,7 +145,7 @@ public class NpcBase : MonoBehaviour {
 	protected virtual Vector3 updatePosition(Vector3 _nextPos){
 		Vector3 dir = mAg.position - transform.position;
 		dir.y = 0f;
-		gameObject.rigidbody.MovePosition (transform.position + dir);
+		gameObject.GetComponent<Rigidbody>().MovePosition (transform.position + dir);
 
 		if (dir.sqrMagnitude < NEAR_RANGE_SQ) {
 			mAg.UpdatePosition ();
