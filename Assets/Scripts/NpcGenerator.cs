@@ -20,6 +20,7 @@ public class NpcGenerator : MonoBehaviour {
 		public Sprite sprite;
 		public NpcGenerator.NpcTeam team;
 		public NpcGenerator.EquipType type;
+		public int hp;
 	}
 	
 	private const int TEAM_NUM = 2;
@@ -87,7 +88,7 @@ public class NpcGenerator : MonoBehaviour {
             PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex);
 
             // （仮）CPUチームのユニットを作る
-            PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex + 1);
+            //PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex + 1);
         }
 
         if (spawnDelay >= SPAWN_DELAY_TIME)
@@ -217,6 +218,8 @@ public class NpcGenerator : MonoBehaviour {
 		//npc.SendMessage("SM_setColor", npcGpInfo [id].color);
 		SetNpcNaviLayer(npc);
 
+		npc.SendMessage("SM_setHP", npcSpriteInfo[sprInfoId].hp);
+
 		// add to list
 		mNpcListArr[id].Add(npc);
 	}
@@ -239,7 +242,7 @@ public class NpcGenerator : MonoBehaviour {
 		int allLayerMask = 0;
 		foreach (string layerStr in navLayerArr)
 		{
-			int layer = NavMesh.GetNavMeshLayerFromName(layerStr);
+			int layer = NavMesh.GetAreaFromName(layerStr);
 			allLayerMask |= (1 << layer);
 		}
 		return allLayerMask;

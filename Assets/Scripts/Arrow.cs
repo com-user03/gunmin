@@ -40,10 +40,10 @@ public class Arrow : MonoBehaviour {
 	private void OnTriggerEnter(Collider _coll){
 		if (_coll.gameObject.tag == "tagNpc") {
 //			Debug.Log("hit");
-            Npc npcObj = _coll.gameObject.GetComponent<Npc>();
+			NpcBase npcObj = _coll.gameObject.GetComponent<NpcBase>();
             if (npcObj)
             {
-                npcObj.KillMe();
+				npcObj.AttackMe(Random.Range(0, 2));
             }
 		}
 		Destroy (gameObject);

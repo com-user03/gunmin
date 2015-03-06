@@ -27,6 +27,11 @@ public class NpcBase : MonoBehaviour {
 	protected NpcGenerator.NpcSpriteInfo mSpriteInfo;
 	private bool mAIUpdateFlag;
 
+	protected int m_maxHP;
+	protected int m_hp;
+	protected NpcBase m_enemyTarget;
+	private const float CHECK_ATTACK_TIME = 1.0f;
+	protected float m_checkAttackTime;
 
 	// for myAgent
 	protected MyAgent mAg;
@@ -50,6 +55,7 @@ public class NpcBase : MonoBehaviour {
 		mAIUpdateFlag = false;
 		prepareParam ();
 		UnitCreatedEvent();
+		m_checkAttackTime = 0;
 	}
 	
 	// Update is called once per frame
@@ -69,6 +75,8 @@ public class NpcBase : MonoBehaviour {
 			mAIUpdateFlag = true;
 		}
 
+		checkAttack();
+
 		mAIUpdateFlag |= (mAg.corners==null);
 		mAIUpdateFlag |= (Random.value < 0.01f);
 		if (mAIUpdateFlag) {
@@ -79,11 +87,6 @@ public class NpcBase : MonoBehaviour {
 
 		if (mAg.corners.Length > 0) {
 			mNextPos = updatePosition (mNextPos);
-		}
-
-		//test
-		if ((transform.position - destTr.position).sqrMagnitude < 2f) {
-			KillMe();
 		}
 
 #if UNITY_EDITOR
@@ -97,44 +100,75 @@ public class NpcBase : MonoBehaviour {
 	{
 		NpcSpriteContainer.GetComponent<NpcSpriteController>().IsDead();
 	}
-	
-	private Transform getNearestEm (Vector3 _pos, float _minDist, float _maxDist){
-		Transform retTr = null;
+
+	private NpcBase getNearestEm(Vector3 _pos, float _minDist, float _maxDist)
+	{
 		List<GameObject> goList = mGenScr.GetEnemyListByTeam (mTeam);
 		foreach (GameObject go in goList) {
 			if(go!=this.gameObject){
 				float distSq = (go.transform.position-transform.position).sqrMagnitude;
 				if((distSq < _maxDist*_maxDist)&&(distSq > _minDist*_minDist)){
-					retTr = go.transform;
-					break;
+					return go.GetComponent<NpcBase>();
 				}
 			}
 		}
 		
-		return retTr;
+		return null;
+	}
+
+	public virtual void AttackMe(int damage)
+	{
+		m_hp -= damage;
+		NpcSpriteContainer.GetComponent<NpcSpriteController>().IsHit();
+
+		if (m_hp <= 0)
+		{
+			KillMe();
+		}
+	}
+
+	protected virtual void checkAttack()
+	{
+		if (m_checkAttackTime >= CHECK_ATTACK_TIME)
+		{
+			m_checkAttackTime = 0;
+			if (m_enemyTarget)
+			{
+				if (m_enemyTarget && (transform.position - m_enemyTarget.transform.position).magnitude < 0.2f)
+				{
+					m_enemyTarget.AttackMe(Random.Range(0, 2));
+					if (!m_enemyTarget)
+					{
+						mAIUpdateFlag = true;
+					}
+				}
+			}
+			else if (destTr && (transform.position - destTr.position).sqrMagnitude < 2f)
+			{
+				// ベースを攻撃する
+				destTr.gameObject.GetComponent<Base>().AttackMe(1);
+			}
+		}
+		else
+		{
+			m_checkAttackTime += Time.deltaTime;
+		}
 	}
 
 	protected virtual bool updateAI(){
 		Transform tempDestTr;
-		tempDestTr = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
+		m_enemyTarget = getNearestEm(transform.position,mCkDistMin,mCkDistMax);
+		tempDestTr = (m_enemyTarget) ? m_enemyTarget.transform : null;
+
 		if (tempDestTr != null) {
 			mTargetTr = tempDestTr;
 			mDestinationPos = tempDestTr.position;
-
-			if ((transform.position - tempDestTr.position).magnitude < 0.2f) {
-				KillMe();
-				return false;
-			}
-			else if ((transform.position - tempDestTr.position).magnitude < 0.5f)
-			{
-				NpcSpriteContainer.GetComponent<NpcSpriteController>().IsHit();
-			}
 		}
 		else if (m_hasMoveTargetPos)
 		{
 			mDestinationPos = m_moveTargetPos;
 		}
-		else
+		else if (destTr)
 		{
 			mDestinationPos = destTr.position;
 			mNextPos = destTr.position;
@@ -236,7 +270,7 @@ public class NpcBase : MonoBehaviour {
 		destTr = _tr;
 	}
 	private void SM_addNaviLayer(string _layerStr){
-		int layer = NavMesh.GetNavMeshLayerFromName(_layerStr);
+		int layer = NavMesh.GetAreaFromName(_layerStr);
 		if (layer >= 0) {
 			mAg.layerMask |= (1 << layer);
 		} else {
@@ -244,7 +278,7 @@ public class NpcBase : MonoBehaviour {
 		}
 	}
 	private void SM_removeNaviLayer(string _layerStr){
-		int layer = NavMesh.GetNavMeshLayerFromName(_layerStr);
+		int layer = NavMesh.GetAreaFromName(_layerStr);
 		if (layer >= 0) {
 			mAg.layerMask &= ~(1 << layer);
 		} else {
@@ -266,4 +300,9 @@ public class NpcBase : MonoBehaviour {
 		mGenScr.gameObject.SendMessage ("SM_removeNpc", this.gameObject);
 	}
 
+	private void SM_setHP(int maxHP)
+	{
+		m_maxHP = maxHP;
+		m_hp = maxHP;
+	}
 }

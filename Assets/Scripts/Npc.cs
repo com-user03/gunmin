@@ -213,8 +213,8 @@ public class Npc : MonoBehaviour {
 		mTempDestTr = destTr;
 	}
 	private void SM_addNaviLayer(string _layerStr){
-		int layerHill = NavMesh.GetNavMeshLayerFromName(_layerStr);
-		mAg.walkableMask |= (1<<layerHill);
+		int layerHill = NavMesh.GetAreaFromName(_layerStr);
+		mAg.areaMask |= (1<<layerHill);
 	}
 	private void SM_setEquipType( NpcGenerator.EquipType _equipType){
 		mEquipType = _equipType;
