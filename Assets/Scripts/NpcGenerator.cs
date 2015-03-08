@@ -21,10 +21,13 @@ public class NpcGenerator : MonoBehaviour {
 		public NpcGenerator.NpcTeam team;
 		public NpcGenerator.EquipType type;
 		public int hp;
+		public float spawnTime;
 	}
 	
 	private const int TEAM_NUM = 2;
 	public enum NpcTeam{ Red=0, Blue=1 }
+	public const int PLAYER_TEAM_NUM = 0;
+	public const int ENEMY_TEAM_NUM = 1;
 	public enum EquipType{
 		Trooper  = 0,
 		Archer   = 1,
@@ -34,13 +37,6 @@ public class NpcGenerator : MonoBehaviour {
 	}
 	public static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
 	public static string[] navLayerArr = new string[4] { "Walkable", "layerHill", "layerBridgeRed", "layerBridgeBlue" };
-	//private static string[,] typeNameArr=new string[3,2]{{"赤兵","青兵"},{"赤弓兵","青弓兵"},{"赤重兵","青重兵"}};
-    
-    //private int m_guiButtonWidth;
-    //private int m_guiButtonHeight;
-    //private const float GUI_BUTTON_WIDTH_SCREEN_PERCENT = 0.1f;
-    //private const float GUI_BUTTON_HEIGHT_SCREEN_PERCENT = 0.033f;
-    //private const int GUI_BUTTON_SPACING = 10;
 
 	public int spawnNum;
 	public int liveMax;
@@ -51,130 +47,105 @@ public class NpcGenerator : MonoBehaviour {
 	public NpcSpriteInfo[] npcSpriteInfo;
 
 	private List<GameObject>[] mNpcListArr;
-	private int[] mSpawnCnt;
-	private EquipType[] mEquipType;
+	//private int[] mSpawnCnt;
+	//private EquipType[] mEquipType;
 
     private bool m_isButtonHeld;
     private EquipType m_npcToSpawn;
-    private int m_npcToSpawnTeamIndex;
+
+	public List<GameObject> EnemyBaseList;
+	public GameObject PlayerBase;
 
 	void Awake(){
-//		nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
 	}
 
 	// Use this for initialization
 	void Start () {
-		if (spawnNum <= 0) { spawnNum = 1; }
+		//if (spawnNum <= 0) { spawnNum = 1; }
 		if (liveMax <= 10) { liveMax = 10; }
 
 		mNpcListArr = new List<GameObject>[nameArr.Length];
-		mSpawnCnt = new int[nameArr.Length];
-		mEquipType = new EquipType[nameArr.Length];
+		//mSpawnCnt = new int[nameArr.Length];
+		//mEquipType = new EquipType[nameArr.Length];
 		for (int ii = 0; ii < nameArr.Length; ++ii) {
 			mNpcListArr [ii] = new List<GameObject>();
-			mSpawnCnt[ii] = spawnNum;
-			mEquipType[ii] = EquipType.Trooper;
+			//mSpawnCnt[ii] = spawnNum;
+			//mEquipType[ii] = EquipType.Trooper;
 		}
 
-        //m_guiButtonWidth = System.Convert.ToInt32(Screen.width * GUI_BUTTON_WIDTH_SCREEN_PERCENT);
-        //m_guiButtonHeight = System.Convert.ToInt32(Screen.width * GUI_BUTTON_HEIGHT_SCREEN_PERCENT);
+		foreach (GameObject baseObj in EnemyBaseList)
+		{
+			Base enemyBase = baseObj.GetComponent<Base>();
+			if (enemyBase)
+			{
+				string npcToSpawnName = enemyBase.NpcSpawnName;
+				NpcSpriteInfo info = System.Array.Find(npcSpriteInfo, x => x.name == npcToSpawnName);
+				enemyBase.Initialize(info);
+			}
+		}
 	}
 	
 	// Update is called once per frame
-	void Update () {
-
-        if (m_isButtonHeld)
-        {
-            PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex);
-
-            // （仮）CPUチームのユニットを作る
-            //PrepareNpc(m_npcToSpawn, m_npcToSpawnTeamIndex + 1);
-        }
-
-        if (spawnDelay >= SPAWN_DELAY_TIME)
-        {
-            //if (Random.value < 0.1f) {
-            for (int ii = 0; ii < nameArr.Length; ++ii)
-            {
-                if (mSpawnCnt[ii] > 0)
-                {
-                    mSpawnCnt[ii]--;
-                    spawnNpc(npcGpInfo[ii].team, mEquipType[ii]);
-                }
-            }
-            //}
-            spawnDelay = 0;
-        }
-        else
-        {
-            spawnDelay += Time.deltaTime;
-        }
-	}
-
-	/*private void OnGUI()
-    {
-		for (int ii = 1; ii < nameArr.Length; ++ii)
-        {
-			if(mSpawnCnt[ii]<=0)
-            {
-				//if(mNpcListArr[ii].Count < liveMax)
-                {
-                    if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, GUI_BUTTON_SPACING, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[0, ii]))
-                    {
-                        PrepareNpc(EquipType.Trooper, ii);
+	void Update ()
+	{
+		foreach (GameObject baseObj in EnemyBaseList)
+		{
+			Base enemyBase = baseObj.GetComponent<Base>();
+			if (enemyBase && enemyBase.IsReadyToSpawn())
+			{
+				for (int i = 0; i < enemyBase.NpcSpawnNum; ++i)
+				{
+					if (npcGpInfo[ENEMY_TEAM_NUM].destTr && mNpcListArr[ENEMY_TEAM_NUM].Count <= liveMax)
+					{
+						spawnNpc(npcGpInfo[ENEMY_TEAM_NUM].team, enemyBase.GetNpcEquipType(), enemyBase.transform.position);
 					}
-                    else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight + GUI_BUTTON_SPACING * 1.5f, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[1, ii]))
-                    {
-                        PrepareNpc(EquipType.Archer, ii);
-					}
-                    else if (GUI.RepeatButton(new Rect((ii - 1) * (m_guiButtonWidth + GUI_BUTTON_SPACING) + 10, m_guiButtonHeight * 2 + GUI_BUTTON_SPACING * 2, m_guiButtonWidth, m_guiButtonHeight), typeNameArr[2, ii]))
-                    {
-                        PrepareNpc(EquipType.Guardian, ii);
-					}
-				//}
-			//}
+				}
+				enemyBase.ResetNpcSpawnDelayTime();
+			}
 		}
-	}*/
 
-    private void PrepareNpc(EquipType npcType, int teamIndex)
-    {
-        mEquipType[teamIndex] = npcType;
-        mSpawnCnt[teamIndex] = Mathf.Min(spawnNum, liveMax - mNpcListArr[teamIndex].Count);
-    }
+		if (m_isButtonHeld)
+		{
+			if (spawnDelay >= SPAWN_DELAY_TIME)
+			{
+				spawnNpc(npcGpInfo[PLAYER_TEAM_NUM].team, m_npcToSpawn, PlayerBase.transform.position);
+				spawnDelay = 0;
+			}
+			else
+			{
+				spawnDelay += Time.deltaTime;
+			}
+		}
+	}
 
     public void Button1Pressed()
     {
         m_isButtonHeld = true;
         m_npcToSpawn = EquipType.Trooper;
-        m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button2Pressed()
     {
         m_isButtonHeld = true;
         m_npcToSpawn = EquipType.Archer;
-        m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button3Pressed()
     {
         m_isButtonHeld = true;
         m_npcToSpawn = EquipType.Guardian;
-        m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button4Pressed()
     {
         m_isButtonHeld = true;
         m_npcToSpawn = EquipType.Trooper2;
-        m_npcToSpawnTeamIndex = 0;
     }
 
     public void Button5Pressed()
     {
         m_isButtonHeld = true;
         m_npcToSpawn = EquipType.Trooper3;
-        m_npcToSpawnTeamIndex = 0;
     }
 
     public void ButtonReleased()
@@ -198,8 +169,8 @@ public class NpcGenerator : MonoBehaviour {
 		return retArr;
 	}
 
-
-	private void spawnNpc(NpcTeam _team, EquipType _equipType){
+	private void spawnNpc(NpcTeam _team, EquipType _equipType, Vector3 spawnPosition)
+	{
 		int id = (int)_team;
 		int sprInfoId = (int)_equipType * TEAM_NUM + id;
 		mNpcPrefab = npcSpriteInfo [sprInfoId].basePrefab;
@@ -209,7 +180,8 @@ public class NpcGenerator : MonoBehaviour {
 
 		GameObject npc = GameObject.Instantiate (mNpcPrefab) as GameObject;
 		npc.name = nameArr [id];
-		npc.transform.position = npcGpInfo[id].spawnTr.position;
+		//npc.transform.position = npcGpInfo[id].spawnTr.position;
+		npc.transform.position = spawnPosition;
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
 		//npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
