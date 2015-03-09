@@ -1,11 +1,8 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Editor\CreateLineMesh.cs">
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs">
     <Files>
-      <File FileName="Assets\Scripts\SelectionManager.cs" Line="114" Column="13" />
-      <File FileName="Assets\Scripts\NavGrid.cs" Line="17" Column="1" />
-      <File FileName="Assets\Scripts\_lib\TmMesh.cs" Line="6" Column="75" />
-      <File FileName="Assets\Editor\CreateLineMesh.cs" Line="19" Column="76" />
+      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs" Line="56" Column="60" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
