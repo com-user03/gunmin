@@ -83,6 +83,8 @@ public class NpcGenerator : MonoBehaviour {
 				enemyBase.Initialize(info);
 			}
 		}
+
+		Base.BaseDestroyedEvent += OnBaseDestroyed;
 	}
 	
 	// Update is called once per frame
@@ -97,7 +99,7 @@ public class NpcGenerator : MonoBehaviour {
 				{
 					if (npcGpInfo[ENEMY_TEAM_NUM].destTr && mNpcListArr[ENEMY_TEAM_NUM].Count <= liveMax)
 					{
-						spawnNpc(npcGpInfo[ENEMY_TEAM_NUM].team, enemyBase.GetNpcEquipType(), enemyBase.transform.position);
+						spawnNpc(npcGpInfo[ENEMY_TEAM_NUM].team, enemyBase.GetNpcEquipType(), enemyBase.transform.position, npcGpInfo[ENEMY_TEAM_NUM].destTr);
 					}
 				}
 				enemyBase.ResetNpcSpawnDelayTime();
@@ -106,9 +108,10 @@ public class NpcGenerator : MonoBehaviour {
 
 		if (m_isButtonHeld)
 		{
-			if (spawnDelay >= SPAWN_DELAY_TIME)
+			if (spawnDelay >= SPAWN_DELAY_TIME && PlayerBase)
 			{
-				spawnNpc(npcGpInfo[PLAYER_TEAM_NUM].team, m_npcToSpawn, PlayerBase.transform.position);
+				Transform destTr = EnemyBaseList[Random.Range(0, EnemyBaseList.Count)].transform;
+				spawnNpc(npcGpInfo[PLAYER_TEAM_NUM].team, m_npcToSpawn, PlayerBase.transform.position, destTr);
 				spawnDelay = 0;
 			}
 			else
@@ -169,7 +172,7 @@ public class NpcGenerator : MonoBehaviour {
 		return retArr;
 	}
 
-	private void spawnNpc(NpcTeam _team, EquipType _equipType, Vector3 spawnPosition)
+	private void spawnNpc(NpcTeam _team, EquipType _equipType, Vector3 spawnPosition, Transform destTr)
 	{
 		int id = (int)_team;
 		int sprInfoId = (int)_equipType * TEAM_NUM + id;
@@ -185,7 +188,7 @@ public class NpcGenerator : MonoBehaviour {
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
 		//npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
-		npc.SendMessage ("SM_setDest", npcGpInfo[id].destTr);
+		npc.SendMessage ("SM_setDest", destTr);
 		npc.SendMessage("SM_setSpriteInfo", npcSpriteInfo[sprInfoId]);
 		//npc.SendMessage("SM_setColor", npcGpInfo [id].color);
 		SetNpcNaviLayer(npc);
@@ -218,6 +221,14 @@ public class NpcGenerator : MonoBehaviour {
 			allLayerMask |= (1 << layer);
 		}
 		return allLayerMask;
+	}
+
+	private void OnBaseDestroyed(GameObject destroyedBase)
+	{
+		if (destroyedBase)
+		{
+			EnemyBaseList.Remove(destroyedBase);
+		}
 	}
 
 	//--------------------

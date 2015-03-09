@@ -21,8 +21,8 @@ public class Base : MonoBehaviour {
 	}
 	private float m_spawnDelayTime;
 
-	//public delegate void BaseDestroyedDelegate(GameObject destroyedBase);
-	//public static event BaseDestroyedDelegate BaseDestroyedEvent;
+	public delegate void BaseDestroyedDelegate(GameObject destroyedBase);
+	public static event BaseDestroyedDelegate BaseDestroyedEvent;
 
 	// Use this for initialization
 	void Start()
@@ -47,7 +47,7 @@ public class Base : MonoBehaviour {
 
 		if (m_hp <= 0)
 		{
-			//BaseDestroyedEvent(this.gameObject);
+			BaseDestroyedEvent(this.gameObject);
 			Destroy(this.gameObject);
 		}
 	}
