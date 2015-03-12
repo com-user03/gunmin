@@ -1,12 +1,15 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\BridgeGenerator.cs">
     <Files>
-      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs" Line="56" Column="60" />
+      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs" Line="65" Column="22" />
+      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\BridgeGenerator.cs" Line="50" Column="68" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs" line="26" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class BridgeGenerator : MonoBehaviour {
 	public GameObject bridgePrefab;
-	public GameObject addBlockPrefab;
 	private Camera mCam;
 	private bool mDrag;
 	private Vector3 mSttPos;
@@ -36,18 +35,19 @@ public class BridgeGenerator : MonoBehaviour {
 				if (Physics.Raycast (ray, out hit)) {
 					mEndColl = hit.collider;
 					mEndPos = hit.point;
+					Vector3 scale = bridgePrefab.transform.localScale;
 					if(mSttColl != mEndColl){
 						Vector3 dir = mEndPos-mSttPos;
 						Vector3 pos = mSttPos + dir*0.5f + Vector3.up*5f;
-						Vector3 scale = bridgePrefab.transform.localScale;
 						scale.z = dir.magnitude;
 						GameObject go = Instantiate(bridgePrefab);
 						go.transform.position = pos;
 						go.transform.rotation = Quaternion.LookRotation(dir);
 						go.transform.localScale = scale;
 					}else{
-						GameObject go = Instantiate(addBlockPrefab);
+						GameObject go = Instantiate(bridgePrefab);
 						go.transform.position = mSttPos + Vector3.up*5f;
+						go.transform.localScale = new Vector3(scale.x,scale.x,scale.x);
 					}
 				}
 			}
