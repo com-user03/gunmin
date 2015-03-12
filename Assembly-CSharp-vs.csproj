@@ -125,7 +125,6 @@
      <Compile Include="Assets\Scripts\InfoManager.cs" />
      <Compile Include="Assets\Scripts\MoveSelectedUI.cs" />
      <Compile Include="Assets\Scripts\MyAgent.cs" />
-     <Compile Include="Assets\Scripts\NavGrid.cs" />
      <Compile Include="Assets\Scripts\Npc.cs" />
      <Compile Include="Assets\Scripts\Npc\NpcArcher.cs" />
      <Compile Include="Assets\Scripts\Npc\NpcBase.cs" />
@@ -133,6 +132,7 @@
      <Compile Include="Assets\Scripts\NpcSprite.cs" />
      <Compile Include="Assets\Scripts\NpcSpriteController.cs" />
      <Compile Include="Assets\Scripts\SelectionManager.cs" />
+     <Compile Include="Assets\Scripts\StageController.cs" />
      <Compile Include="Assets\Scripts\_lib\TmMath.cs" />
      <Compile Include="Assets\Scripts\_lib\TmMesh.cs" />
      <Compile Include="Assets\Scripts\myCam.cs" />

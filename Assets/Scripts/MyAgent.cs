@@ -3,6 +3,7 @@ using System.Collections;
 
 public class MyAgent{
 	private NavMeshPath mPath;
+	private AstarPath mAsPath;
 	private Vector3[] mCorners;
 	private int mCornerPtr;
 	private Vector3 mPosition;
@@ -14,6 +15,7 @@ public class MyAgent{
 	
 	public MyAgent(){
 		mPath = new NavMeshPath();
+		mAsPath = StageController.instance.astarPath;
 		mCorners = new Vector3[0];
 		speed = 0f;
 		layerMask = 0;
