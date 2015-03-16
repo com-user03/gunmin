@@ -1,8 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using Pathfinding;
+using Pathfinding.RVO;
 
+[RequireComponent(typeof(Seeker))]
 public class MyAgent{
+	private const bool USE_SEEKER_PATH = true;
 	private NavMeshPath mPath;
+
+	private Seeker mSeeker;
+	private bool mIsSeeking;
+
 	private AstarPath mAsPath;
 	private Vector3[] mCorners;
 	private int mCornerPtr;
@@ -13,21 +22,32 @@ public class MyAgent{
 	public float speed { get; set; }
 	public int layerMask { get; set; }
 	
-	public MyAgent(){
+	public MyAgent(GameObject _go){
+		mSeeker = _go.GetComponent<Seeker>();
 		mPath = new NavMeshPath();
 		mAsPath = StageController.instance.astarPath;
 		mCorners = new Vector3[0];
 		speed = 0f;
 		layerMask = 0;
+		Enable ();
 	}
 	public bool CalculatePath(Vector3 _srcPos, Vector3 _tgtPos){
 		bool ret = false;
-		if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
-			mCorners = mPath.corners;
-			mCornerPtr = 0;
-			mPosition = _srcPos;
-			if(mCorners.Length>0){
+		if (USE_SEEKER_PATH) {
+			if (!mIsSeeking) {
+				mIsSeeking = true;
+				mPosition = _srcPos;
+				mSeeker.StartPath (_srcPos, _tgtPos);
 				ret = true;
+			}
+		} else {
+			if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
+				mCorners = mPath.corners;
+				mCornerPtr = 0;
+				mPosition = _srcPos;
+				if(mCorners.Length>0){
+					ret = true;
+				}
 			}
 		}
 		return ret;
@@ -59,6 +79,28 @@ public class MyAgent{
 		return ret;
 	}
 
+	public void Enable () {
+		mSeeker.pathCallback += OnPathComplete;
+	}
+	
+	public void Disable () {
+		mSeeker.pathCallback -= OnPathComplete;
+	}
+	
+	public virtual void OnPathComplete (Path _p) {
+		mIsSeeking = false;
+		ABPath abp = _p as ABPath;
+		if (abp == null) throw new System.Exception ("This function only handles ABPaths, do not use special path types");
+
+		//Claim the new path
+		abp.Claim (this);
+
+		List<Vector3> vPath = abp.vectorPath;
+		mCorners = vPath.ToArray ();
+		mCornerPtr = 0;
+	}
+	
+	
 	//----------------------
 	public bool debugCourseDisp(Color _sttCol, Color _endCol){
 		bool ret = false;

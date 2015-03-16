@@ -1,14 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\AstarPathfindingProject\Core\AI\AIPath.cs">
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Npc\NpcBase.cs">
     <Files>
-      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\MineBotAI.cs" Line="23" Column="30" />
-      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="37" Column="16" />
-      <File FileName="Assets\Scripts\MyAgent.cs" Line="18" Column="48" />
-      <File FileName="Assets\Scripts\StageController.cs" Line="35" Column="3" />
-      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\BridgeGenerator.cs" Line="29" Column="37" />
-      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs" Line="21" Column="1" />
-      <File FileName="Assets\AstarPathfindingProject\Core\AI\AIPath.cs" Line="37" Column="1" />
+      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="61" Column="25" />
+      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\MineBotAI.cs" Line="23" Column="28" />
+      <File FileName="Assets\AstarPathfindingProject\Core\AI\AIPath.cs" Line="368" Column="29" />
+      <File FileName="Assets\AstarPathfindingProject\Core\Path.cs" Line="7" Column="1" />
+      <File FileName="Assets\Scripts\MyAgent.cs" Line="13" Column="26" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

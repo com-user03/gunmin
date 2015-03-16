@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class NpcBase : MonoBehaviour {
+	private Bounds VIABLE_AREA{get{
+		return new Bounds(Vector3.zero,Vector3.one*10f);
+	}}
 	private const float UP_OFS = 0.1f;
 	private const float NEAR_RANGE_SQ = 0.5f*0.5f;
 	private const float DEF_SPEED = 0.4f;
@@ -46,7 +49,7 @@ public class NpcBase : MonoBehaviour {
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
 	virtual public void Awake(){
-		mAg = new MyAgent ();
+		mAg = new MyAgent (gameObject);
 	}
 	
 	// Use this for initialization
@@ -60,6 +63,10 @@ public class NpcBase : MonoBehaviour {
 	
 	// Update is called once per frame
 	virtual public void Update () {
+		if (!VIABLE_AREA.Contains (transform.position)) {
+			SM_removeMe();
+		}
+		
 		if (mAg.corners.Length == 0) {
 			NavMeshHit hit;
 			Vector3 tmpPos = transform.position;
