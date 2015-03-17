@@ -36,7 +36,7 @@ public class NpcGenerator : MonoBehaviour {
 		Trooper3 = 4,
 	}
 	public static string[] nameArr=new string[TEAM_NUM]{"npcRed","npcBlue"};
-	public static string[] navLayerArr = new string[4] { "Walkable", "layerHill", "layerBridgeRed", "layerBridgeBlue" };
+	public static string[] navLayerArr = new string[4] { "Walkable", "NavLayerHill", "NavLayerBridgeRed", "NavLayerBridgeBlue" };
 
 	public int spawnNum;
 	public int liveMax;

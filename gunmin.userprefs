@@ -1,17 +1,19 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\AstarPathfindingProject\Core\AstarPath.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\NpcGenerator.cs">
     <Files>
-      <File FileName="Assets\AstarPathfindingProject\Core\AstarPath.cs" Line="804" Column="1" />
-      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\Bridge.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="11" Column="39" />
-      <File FileName="Assets\AstarPathfindingProject\ExampleScenes\ExampleScripts\MineBotAI.cs" Line="1" Column="1" />
-      <File FileName="Assets\AstarPathfindingProject\Core\AI\AIPath.cs" Line="1" Column="1" />
-      <File FileName="Assets\AstarPathfindingProject\Core\Path.cs" Line="1" Column="1" />
+      <File FileName="Assets\AstarPathfindingProject\Core\AstarPath.cs" Line="596" Column="35" />
+      <File FileName="Assets\AstarPathfindingProject\Core\AI\Seeker.cs" Line="34" Column="1" />
+      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="286" Column="34" />
+      <File FileName="Assets\Scripts\MyAgent.cs" Line="15" Column="43" />
+      <File FileName="Assets\Scripts\Npc\NpcArcher.cs" Line="7" Column="10" />
+      <File FileName="Assets\Scripts\NpcGenerator.cs" Line="45" Column="32" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Npc\NpcBase.cs" line="288" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

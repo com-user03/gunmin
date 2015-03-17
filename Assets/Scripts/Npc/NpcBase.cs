@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Pathfinding;
 
 public class NpcBase : MonoBehaviour {
 	private Bounds VIABLE_AREA{get{
@@ -39,6 +40,9 @@ public class NpcBase : MonoBehaviour {
 	// for myAgent
 	protected MyAgent mAg;
 	
+//	[HideInInspector]
+	public TagMask traversableTags = new TagMask (-1,-1);
+
 	public GameObject NpcSpriteContainer;
 	private GameObject m_npcSpriteObject;
 	private GameObject m_selectedUI;

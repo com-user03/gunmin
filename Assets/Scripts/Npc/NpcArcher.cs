@@ -4,12 +4,12 @@ using System.Collections;
 public class NpcArcher : NpcBase {
 	public GameObject arrowPrefab;
 
-	virtual public void Awake(){
+	override public void Awake(){
 		base.Awake ();
 	}
 	
 	// Use this for initialization
-	virtual public void Start () {
+	override public void Start () {
 		base.Start ();
 		mDefSpeed = 2.0f * (0.8f + Random.value * 0.4f);
 		mCkDistMin = 4f;
@@ -17,7 +17,7 @@ public class NpcArcher : NpcBase {
 	}
 	
 	// Update is called once per frame
-	virtual public void Update () {
+	override public void Update () {
 		base.Update ();
 	}
 	
