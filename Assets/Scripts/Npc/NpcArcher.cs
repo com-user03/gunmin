@@ -38,9 +38,10 @@ public class NpcArcher : NpcBase {
 	//---------------------------------
 	private bool setArrow(Transform _tgtTr, float _arrowSpd){
 		bool ret = false;
-		Vector3 _pos = _tgtTr.transform.position;
+		Vector3 _pos = Vector3.zero;
 		Vector3 npcSpdVec = Vector3.zero;
 		if (_tgtTr != null){
+			_pos = _tgtTr.transform.position;
 			Rigidbody rb = _tgtTr.GetComponent<Rigidbody> ();
 			if(rb!=null){
 				npcSpdVec = rb.velocity;

@@ -190,7 +190,8 @@ public class NpcBase : MonoBehaviour {
 	protected virtual Vector3 updatePosition(Vector3 _nextPos){
 		Vector3 dir = mAg.position - transform.position;
 		dir.y = 0f;
-		gameObject.GetComponent<Rigidbody>().MovePosition (transform.position + dir);
+//		gameObject.GetComponent<Rigidbody>().MovePosition (transform.position + dir);
+		gameObject.GetComponent<Rigidbody> ().velocity = dir/Time.deltaTime;
 
 		if (dir.sqrMagnitude < NEAR_RANGE_SQ) {
 			mAg.UpdatePosition ();
