@@ -63,6 +63,10 @@ public class MyAgent{
 	public MyAgent(GameObject _go){
 		if (USE_SEEKER_PATH) {
 			mSeeker = _go.GetComponent<Seeker> ();
+			if(mSeeker==null){
+				mSeeker = _go.AddComponent<Seeker> ();
+				mSeeker.traversableTags = new TagMask(0,0);
+			}
 			mAsPath = StageController.instance.astarPath;
 		} else {
 			mPath = new NavMeshPath();
@@ -77,9 +81,7 @@ public class MyAgent{
 			if (!mIsSeeking) {
 				mIsSeeking = true;
 				mPosition = _srcPos;
-//				int tagMask = LayerMaskToTagMask(layerMask);
-//				mSeeker.traversableTags = new TagMask(tagMask,tagMask);
-				mSeeker.StartPath (_srcPos, _tgtPos ,onPathComplete, mSeeker.traversableTags.tagsSet);
+				mSeeker.StartPath (_srcPos, _tgtPos ,onPathComplete, mSeeker.traversableTags.tagsChange);
 				ret = true;
 			}
 		} else {
