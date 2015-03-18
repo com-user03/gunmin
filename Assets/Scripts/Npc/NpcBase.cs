@@ -281,20 +281,10 @@ public class NpcBase : MonoBehaviour {
 		destTr = _tr;
 	}
 	private void SM_addNaviLayer(string _layerStr){
-		int layer = NavMesh.GetAreaFromName(_layerStr);
-		if (layer >= 0) {
-			mAg.layerMask |= (1 << layer);
-		} else {
-			Debug.Log("warning: bad layer name.");
-		}
+		mAg.AddNaviLayer (_layerStr);
 	}
 	private void SM_removeNaviLayer(string _layerStr){
-		int layer = NavMesh.GetAreaFromName(_layerStr);
-		if (layer >= 0) {
-			mAg.layerMask &= ~(1 << layer);
-		} else {
-			Debug.Log("warning: bad layer name.");
-		}
+		mAg.RemoveNaviLayer (_layerStr);
 	}
 	private void SM_setEquipType( NpcGenerator.EquipType _equipType){}
 	private void SM_setTeam(NpcGenerator.NpcTeam _team)	{}

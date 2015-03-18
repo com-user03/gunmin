@@ -10,7 +10,6 @@ public class NpcGenerator : MonoBehaviour {
 		public Transform spawnTr;
 		public Transform destTr;
 		public NpcTeam team;
-		public string naviLayerStr;
 	}
 
 	[System.Serializable]
@@ -187,7 +186,6 @@ public class NpcGenerator : MonoBehaviour {
 		npc.transform.position = spawnPosition;
         npc.SendMessage("SM_initializeNpcSprite");
 		npc.SendMessage ("SM_setGenerator", gameObject);
-		//npc.SendMessage ("SM_addNaviLayer", npcGpInfo[id].naviLayerStr);
 		npc.SendMessage ("SM_setDest", destTr);
 		npc.SendMessage("SM_setSpriteInfo", npcSpriteInfo[sprInfoId]);
 		//npc.SendMessage("SM_setColor", npcGpInfo [id].color);

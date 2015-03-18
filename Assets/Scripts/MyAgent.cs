@@ -1,6 +1,4 @@
-﻿#define USE_SEEKER_PATH
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Pathfinding;
@@ -8,6 +6,8 @@ using Pathfinding.RVO;
 
 [RequireComponent(typeof(Seeker))]
 public class MyAgent{
+	public const bool USE_SEEKER_PATH = true;
+
 	public enum TagNameLayer{ // A* TagNameにあわせる 
 		BasicGround = 0,           // NavLayer 0
 		AStarTagNotWalkable = 1,   // NavLayer 1
@@ -35,7 +35,7 @@ public class MyAgent{
 	public float speed { get; set; }
 	public int layerMask { get; set; }
 
-	public int layerMaskToTagMask(int _layerMask){
+	public static int LayerMaskToTagMask(int _layerMask){
 		int mask = (1<<((int)TagNameLayer.BasicGround));
 		if ((getLayerMaskFromName ("NavLayerBridgeRed") & _layerMask)!=0) {
 			mask |= (1<<((int)TagNameLayer.AStarTagBridgeRed));
@@ -48,7 +48,7 @@ public class MyAgent{
 		}
 		return mask;
 	}
-	private int getLayerMaskFromName(string _layerStr){
+	private static int getLayerMaskFromName(string _layerStr){
 		int mask = 0;
 		int layer = NavMesh.GetAreaFromName(_layerStr);
 		if (layer >= 0) {
@@ -61,37 +61,37 @@ public class MyAgent{
 
 	
 	public MyAgent(GameObject _go){
-#if (USE_SEEKER_PATH)
-		mSeeker = _go.GetComponent<Seeker> ();
-		mAsPath = StageController.instance.astarPath;
-#else
-		mPath = new NavMeshPath();
-#endif
+		if (USE_SEEKER_PATH) {
+			mSeeker = _go.GetComponent<Seeker> ();
+			mAsPath = StageController.instance.astarPath;
+		} else {
+			mPath = new NavMeshPath();
+		}
 		mCorners = new Vector3[0];
 		speed = 0f;
 		layerMask = 0;
-		Enable ();
 	}
 	public bool CalculatePath(Vector3 _srcPos, Vector3 _tgtPos){
 		bool ret = false;
-#if (USE_SEEKER_PATH)
-		if (!mIsSeeking) {
-			mIsSeeking = true;
-			mPosition = _srcPos;
-			int tagMask = layerMaskToTagMask(layerMask);
-			mSeeker.StartPath (_srcPos, _tgtPos ,onPathComplete, tagMask);
-			ret = true;
-		}
-#else
-		if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
-			mCorners = mPath.corners;
-			mCornerPtr = 0;
-			mPosition = _srcPos;
-			if(mCorners.Length>0){
+		if (USE_SEEKER_PATH) {
+			if (!mIsSeeking) {
+				mIsSeeking = true;
+				mPosition = _srcPos;
+//				int tagMask = LayerMaskToTagMask(layerMask);
+//				mSeeker.traversableTags = new TagMask(tagMask,tagMask);
+				mSeeker.StartPath (_srcPos, _tgtPos ,onPathComplete, mSeeker.traversableTags.tagsSet);
 				ret = true;
 			}
+		} else {
+			if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
+				mCorners = mPath.corners;
+				mCornerPtr = 0;
+				mPosition = _srcPos;
+				if(mCorners.Length>0){
+					ret = true;
+				}
+			}
 		}
-#endif
 		return ret;
 	}
 	public bool UpdatePosition(){
@@ -121,14 +121,6 @@ public class MyAgent{
 		return ret;
 	}
 
-	public void Enable () {
-//		mSeeker.pathCallback += OnPathComplete;
-	}
-	
-	public void Disable () {
-//		mSeeker.pathCallback -= OnPathComplete;
-	}
-	
 	private void onPathComplete (Path _p) {
 		mIsSeeking = false;
 		ABPath abp = _p as ABPath;
@@ -142,7 +134,36 @@ public class MyAgent{
 		mCornerPtr = 0;
 	}
 	
-	
+	public void AddNaviLayer(string _layerStr){
+		int layer = NavMesh.GetAreaFromName(_layerStr);
+		if (layer >= 0) {
+			if (USE_SEEKER_PATH) {
+				int tagMask = mSeeker.traversableTags.tagsChange;
+				tagMask |= LayerMaskToTagMask(1 << layer);
+				mSeeker.traversableTags = new TagMask(tagMask,tagMask);
+			} else {
+				layerMask |= (1 << layer);
+			}
+		} else {
+			Debug.Log("warning: bad layer name.");
+		}
+	}
+
+	public void RemoveNaviLayer(string _layerStr){
+		int layer = NavMesh.GetAreaFromName(_layerStr);
+		if (layer >= 0) {
+			if (USE_SEEKER_PATH) {
+				int tagMask = mSeeker.traversableTags.tagsChange;
+				tagMask &= (~MyAgent.LayerMaskToTagMask(1 << layer));
+				mSeeker.traversableTags = new TagMask(tagMask,tagMask);
+			} else {
+				layerMask &= ~(1 << layer);
+			}
+		} else {
+			Debug.Log("warning: bad layer name.");
+		}
+	}
+
 	//----------------------
 	public bool debugCourseDisp(Color _sttCol, Color _endCol){
 		bool ret = false;
