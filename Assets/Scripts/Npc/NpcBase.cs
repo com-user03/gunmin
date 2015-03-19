@@ -63,21 +63,24 @@ public class NpcBase : MonoBehaviour {
 		prepareParam ();
 		UnitCreatedEvent();
 		m_checkAttackTime = 0;
+		mCkDistMin = 0f;
+		mCkDistMax = 2.0f;
 	}
 	
 	// Update is called once per frame
 	virtual public void Update () {
 		if (!VIABLE_AREA.Contains (transform.position)) {
 			SM_removeMe();
+			return;
 		}
 		
 		if (mAg.corners.Length == 0) {
 			NavMeshHit hit;
 			Vector3 tmpPos = transform.position;
 			Vector3 tmpOfs = Vector3.up*1f;
-			if(NavMesh.Raycast(tmpPos-tmpOfs,tmpPos+tmpOfs,out hit,mAg.layerMask)){
-				tmpPos = hit.position;
-			}
+//			if(NavMesh.Raycast(tmpPos-tmpOfs,tmpPos+tmpOfs,out hit,mAg.layerMask)){
+//				tmpPos = hit.position;
+//			}
 			mAg.CalculatePath(tmpPos,mDestinationPos);
 		}
 		else if (m_hasMoveTargetPos && (transform.position - mDestinationPos).magnitude < 0.1f)
@@ -190,9 +193,8 @@ public class NpcBase : MonoBehaviour {
 	protected virtual Vector3 updatePosition(Vector3 _nextPos){
 		Vector3 dir = mAg.position - transform.position;
 		dir.y = 0f;
-//		gameObject.GetComponent<Rigidbody>().MovePosition (transform.position + dir);
-		gameObject.GetComponent<Rigidbody> ().velocity = dir/Time.deltaTime;
-
+//		gameObject.GetComponent<Rigidbody> ().velocity = dir/Time.deltaTime;
+		gameObject.GetComponent<Rigidbody>().MovePosition (transform.position + dir);
 		if (dir.sqrMagnitude < NEAR_RANGE_SQ) {
 			mAg.UpdatePosition ();
 		}
@@ -209,33 +211,6 @@ public class NpcBase : MonoBehaviour {
 
 	private void prepareParam(){
 		bool isEnemy = (mTeam != NpcGenerator.NpcTeam.Red);
-		switch (mEquipType)
-		{
-		default:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case  NpcGenerator.EquipType.Trooper:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case  NpcGenerator.EquipType.Archer:
-			mCkDistMin = 4f;
-			mCkDistMax = 6f;
-			break;
-		case  NpcGenerator.EquipType.Guardian:
-			mCkDistMin = 0f;
-			mCkDistMax = 0.5f;
-			break;
-		case  NpcGenerator.EquipType.Trooper2:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		case  NpcGenerator.EquipType.Trooper3:
-			mCkDistMin = 0f;
-			mCkDistMax = 2.0f;
-			break;
-		}
 		Sprite npcSprite = (isEnemy) ? EnemySprite : mSpriteInfo.sprite;
 		NpcSpriteContainer.GetComponent<NpcSpriteController>().SetSprite(npcSprite);
 		

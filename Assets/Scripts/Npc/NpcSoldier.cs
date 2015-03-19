@@ -9,6 +9,8 @@ public class NpcSoldier : NpcBase {
 
 	override public void Start () {
 		base.Start ();
+		mCkDistMin = 0f;
+		mCkDistMax = 2.0f;
 	}
 
 	override public void Update () {
