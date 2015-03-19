@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class BridgeGenerator : MonoBehaviour {
+	private const float MES_TIME = 10f;
+	private const string MES_STR = "Press [Right_Shift] and drag to construct.";
 	public GameObject bridgePrefab;
 	public float bridgeWidth;
 	private Camera mCam;
@@ -11,11 +13,13 @@ public class BridgeGenerator : MonoBehaviour {
 	private Collider mSttColl;
 	private Collider mEndColl;
 	private StageController mStgCtrl;
+	private float mMesTimer;
 	// Use this for initialization
 	void Start () {
 		mCam = Camera.main;
 		mDrag = false;
 		mStgCtrl = StageController.instance;
+		mMesTimer = MES_TIME;
 	}
 	
 	// Update is called once per frame
@@ -57,6 +61,13 @@ public class BridgeGenerator : MonoBehaviour {
 				}
 			}
 		}
-	
+	}
+
+	private void OnGUI(){
+		if (mMesTimer > 0f) {
+			mMesTimer -= Time.deltaTime;
+			GUI.backgroundColor = Color.black;
+			GUI.Box (new Rect (0, 0, 400, 24), MES_STR);
+		}
 	}
 }
