@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BridgeGenerator : MonoBehaviour {
 	private const float MES_TIME = 10f;
-	private const string MES_STR = "Press [Right_Shift] and drag to construct.";
+	private const string MES_STR = "Hold [Left_Shift] and drag to construct a bridge.";
 	public GameObject bridgePrefab;
 	public float bridgeWidth;
 	private Camera mCam;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Pathfinding;
 
+[RequireComponent(typeof(Seeker))]
 public class NpcBase : MonoBehaviour {
 	private Bounds VIABLE_AREA{get{
 		return new Bounds(Vector3.zero,Vector3.one*10f);
@@ -53,7 +54,7 @@ public class NpcBase : MonoBehaviour {
 	public static event UnitRemovedDelegate UnitRemovedEvent;
 	
 	virtual public void Awake(){
-		mAg = new MyAgent (gameObject);
+		mAg = new MyAgent (gameObject,true);
 	}
 	
 	// Use this for initialization

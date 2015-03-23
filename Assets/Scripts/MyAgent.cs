@@ -60,14 +60,16 @@ public class MyAgent{
 	}
 
 	
-	public MyAgent(GameObject _go){
+	public MyAgent(GameObject _go, bool _tagClear){
 		if (USE_SEEKER_PATH) {
 			mSeeker = _go.GetComponent<Seeker> ();
 			if(mSeeker==null){
 				mSeeker = _go.AddComponent<Seeker> ();
 			}
-			mSeeker.traversableTags = new TagMask(0,0);
-			mSeeker.drawGizmos = false;
+			if(_tagClear){
+				mSeeker.traversableTags = new TagMask(0,0);
+				mSeeker.drawGizmos = false;
+			}
 			mAsPath = StageController.instance.astarPath;
 		} else {
 			mPath = new NavMeshPath();

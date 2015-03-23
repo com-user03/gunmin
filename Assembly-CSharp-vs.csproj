@@ -122,6 +122,8 @@
      <Compile Include="Assets\AstarPathfindingProject\changelog.cs" />
      <Compile Include="Assets\Scripts\Arrow.cs" />
      <Compile Include="Assets\Scripts\Base.cs" />
+     <Compile Include="Assets\Scripts\Enemy\EmBase.cs" />
+     <Compile Include="Assets\Scripts\Enemy\EmSphere.cs" />
      <Compile Include="Assets\Scripts\InfoManager.cs" />
      <Compile Include="Assets\Scripts\MoveSelectedUI.cs" />
      <Compile Include="Assets\Scripts\MyAgent.cs" />
