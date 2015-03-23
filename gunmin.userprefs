@@ -1,14 +1,18 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Npc\NpcSoldier.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Enemy\EmSphere.cs">
     <Files>
-      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="214" Column="67" />
-      <File FileName="Assets\Scripts\Npc\NpcSoldier.cs" Line="11" Column="17" />
+      <File FileName="Assets\Scripts\Enemy\EmBase.cs" Line="14" Column="38" />
+      <File FileName="Assets\Scripts\Enemy\EmSphere.cs" Line="18" Column="37" />
+      <File FileName="Assets\Scripts\MyAgent.cs" Line="78" Column="1" />
+      <File FileName="Assets\Scripts\NpcGenerator.cs" Line="216" Column="42" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Npc\NpcSphere.cs" line="11" />
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Enemy\EmBase.cs" line="56" />
+      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\MyAgent.cs" line="110" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

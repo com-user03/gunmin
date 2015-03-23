@@ -67,13 +67,13 @@ public class MyAgent{
 			if(mSeeker==null){
 				mSeeker = _go.AddComponent<Seeker> ();
 			}
-			if(_tagClear){
-				mSeeker.traversableTags = new TagMask(0,0);
-				mSeeker.drawGizmos = false;
-			}
+			mSeeker.drawGizmos = false;
 			mAsPath = StageController.instance.astarPath;
 		} else {
 			mPath = new NavMeshPath();
+		}
+		if(_tagClear){
+			SetNaviLayer(0);
 		}
 		mCorners = new Vector3[0];
 		speed = DEF_SPEED;
@@ -102,13 +102,16 @@ public class MyAgent{
 		}
 		return ret;
 	}
-	public bool UpdatePosition(){
+	public bool UpdatePosition(float _spd=0f){
 		bool ret = false;
+		if (_spd == 0f) {
+			_spd = speed;
+		}
 		if ((mCorners != null) && (mCorners.Length > mCornerPtr) ) {
 			if(mCornerPtr<mCorners.Length){
 				Vector3 tgtPos = mCorners[mCornerPtr];
 				Vector3 dir = tgtPos - mPosition;
-				float deltaSpd = speed*Time.deltaTime;
+				float deltaSpd = _spd*Time.deltaTime;
 				float spd = Mathf.Min (dir.magnitude,deltaSpd);
 				mPosition += dir.normalized * spd;
 				NavMeshHit hit;
@@ -142,6 +145,14 @@ public class MyAgent{
 		mCornerPtr = 0;
 	}
 	
+	public void SetNaviLayer(int _layerMask){
+		if (USE_SEEKER_PATH) {
+			int tagMask = LayerMaskToTagMask(_layerMask);
+			mSeeker.traversableTags = new TagMask(tagMask,tagMask);
+		} else {
+			layerMask = _layerMask;
+		}
+	}
 	public void AddNaviLayer(string _layerStr){
 		int layer = NavMesh.GetAreaFromName(_layerStr);
 		if (layer >= 0) {
