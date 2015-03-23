@@ -7,6 +7,7 @@ using Pathfinding.RVO;
 [RequireComponent(typeof(Seeker))]
 public class MyAgent{
 	public const bool USE_SEEKER_PATH = true;
+	public const float DEF_SPEED = 1.0f;
 
 	public enum TagNameLayer{ // A* TagNameにあわせる 
 		BasicGround = 0,           // NavLayer 0
@@ -75,7 +76,7 @@ public class MyAgent{
 			mPath = new NavMeshPath();
 		}
 		mCorners = new Vector3[0];
-		speed = 0f;
+		speed = DEF_SPEED;
 		layerMask = 0;
 	}
 	public bool CalculatePath(Vector3 _srcPos, Vector3 _tgtPos){

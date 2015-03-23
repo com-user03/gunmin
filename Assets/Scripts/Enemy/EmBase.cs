@@ -7,12 +7,14 @@ public class EmBase : MonoBehaviour {
 	protected MyAgent mAg;
 	protected Transform mTargetTr;
 	protected Vector3 mTargetPos;
+	protected Vector3 mNextPos;
 	protected Camera mMainCam;
 
 	public virtual void Awake(){
 		mAg = new MyAgent (gameObject,false);
 		mTargetTr = null;
 		mTargetPos = transform.position;
+		mNextPos = transform.position;
 		mMainCam = Camera.main;
 	}
 
@@ -32,6 +34,10 @@ public class EmBase : MonoBehaviour {
 				mAg.CalculatePath(transform.position,destPos);
 			}
 		}
+		if (mAg.corners.Length > 0) {
+			mNextPos = updatePosition (mNextPos);
+		}
+
 #if UNITY_EDITOR
 		if (mAg != null) {
 			mAg.debugCourseDisp (Color.red, Color.blue);
