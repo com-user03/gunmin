@@ -21,10 +21,31 @@ public class MyAgent{
 		AStarTagHill = 8,          // NavLayer 8
 	}
 
-	private NavMeshPath mPath;
+	//------------------------------------------------
+	// NavMeshPathStatus,PathCompleteState の統一用 
+	public enum PathState{
+		Complete,
+		Seeking,
+		Partial,
+		Error
+	}
+	public class PathCompleteResult{
+		public PathState state;
+		public Vector3[] corners;
+		public Vector3 sttPos;
+		public Vector3 tgtPos;
+		public PathCompleteResult(){
+			state = PathState.Error;
+			corners = null;
+		}
+	}
+	//------------------------------------------------
+
+	public delegate void OnCalculatePathComplete(PathCompleteResult result);
 
 	private AstarPath mAsPath;
 	private Seeker mSeeker;
+	private PathState mPathState;
 	private bool mIsSeeking;
 
 	private Vector3[] mCorners;
@@ -62,6 +83,7 @@ public class MyAgent{
 
 	
 	public MyAgent(GameObject _go, bool _tagClear){
+		mIsSeeking = false;
 		if (USE_SEEKER_PATH) {
 			mSeeker = _go.GetComponent<Seeker> ();
 			if(mSeeker==null){
@@ -70,35 +92,77 @@ public class MyAgent{
 			mSeeker.drawGizmos = false;
 			mAsPath = StageController.instance.astarPath;
 		} else {
-			mPath = new NavMeshPath();
 		}
 		if(_tagClear){
 			SetNaviLayer(0);
 		}
+		mPathState = PathState.Complete;
 		mCorners = new Vector3[0];
 		speed = DEF_SPEED;
 		layerMask = 0;
 	}
-	public bool CalculatePath(Vector3 _srcPos, Vector3 _tgtPos){
+	public bool CalculatePath(Vector3 _sttPos, Vector3 _tgtPos, OnCalculatePathComplete _callback=null){
 		bool ret = false;
+		if(mIsSeeking){
+			return ret;
+		}
+		mIsSeeking=true;
+
+		PathCompleteResult result = new PathCompleteResult ();
+		result.state = PathState.Seeking;
+		result.sttPos = _sttPos;
+		result.tgtPos = _tgtPos;
+		if (_callback == null) {
+			_callback = defOnPathComplete;
+		}
 		if (USE_SEEKER_PATH) {
-			if (!mIsSeeking) {
-				if(mSeeker.isActiveAndEnabled){
-					mIsSeeking = true;
-					mPosition = _srcPos;
-					mSeeker.StartPath (_srcPos, _tgtPos ,onPathComplete, mSeeker.traversableTags.tagsChange);
-					ret = true;
+			mSeeker.StartPath (_sttPos, _tgtPos ,(Path _p)=>{
+				ABPath abp = _p as ABPath;
+				if (abp == null) throw new System.Exception ("This function only handles ABPaths, do not use special path types");
+				
+				switch (abp.CompleteState) {
+				case PathCompleteState.Complete:      result.state = PathState.Complete; break;
+				case PathCompleteState.Error:         result.state = PathState.Error;    break;
+				case PathCompleteState.NotCalculated: result.state = PathState.Error;    break;
+				case PathCompleteState.Partial:       result.state = PathState.Partial;  break;
+				default:                              result.state = PathState.Error;    break;
 				}
-			}
+				
+				//Claim the new path
+				abp.Claim (this);
+				
+				if (abp.vectorPath != null) {
+					result.corners = abp.vectorPath.ToArray ();
+				}
+				if (result.state == PathState.Complete) {
+					mPosition = result.sttPos;
+					mPathState = result.state;
+					mCorners = result.corners;
+					mCornerPtr = 0;
+				}
+				_callback(result);
+				mIsSeeking=false;
+			}, mSeeker.traversableTags.tagsChange);
+			ret = true;
 		} else {
-			if (NavMesh.CalculatePath (_srcPos, _tgtPos, layerMask, mPath)) {
-				mCorners = mPath.corners;
+			NavMeshPath path = new NavMeshPath();
+			if (NavMesh.CalculatePath (_sttPos, _tgtPos, layerMask, path)) {
+				switch (path.status) {
+				case NavMeshPathStatus.PathComplete:  result.state = PathState.Complete; break;
+				case NavMeshPathStatus.PathInvalid:   result.state = PathState.Error;    break;
+				case NavMeshPathStatus.PathPartial:   result.state = PathState.Partial;  break;
+				default:                              result.state = PathState.Error;    break;
+				}
+				result.corners = path.corners;
+
+				mPathState = result.state;
+				mCorners = result.corners;
 				mCornerPtr = 0;
-				mPosition = _srcPos;
 				if(mCorners.Length>0){
 					ret = true;
 				}
 			}
+			mIsSeeking=false;
 		}
 		return ret;
 	}
@@ -132,19 +196,10 @@ public class MyAgent{
 		return ret;
 	}
 
-	private void onPathComplete (Path _p) {
-		mIsSeeking = false;
-		ABPath abp = _p as ABPath;
-		if (abp == null) throw new System.Exception ("This function only handles ABPaths, do not use special path types");
-
-		//Claim the new path
-		abp.Claim (this);
-
-		List<Vector3> vPath = abp.vectorPath;
-		mCorners = vPath.ToArray ();
-		mCornerPtr = 0;
+	private void defOnPathComplete (PathCompleteResult _result) {
+//		Debug.Log ("RR:" + _result.corners.Length);
 	}
-	
+
 	public void SetNaviLayer(int _layerMask){
 		if (USE_SEEKER_PATH) {
 			int tagMask = LayerMaskToTagMask(_layerMask);
