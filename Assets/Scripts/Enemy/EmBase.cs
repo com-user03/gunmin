@@ -6,6 +6,7 @@ using Pathfinding;
 public class EmBase : MonoBehaviour {
 	protected MyAgent mAg;
 	protected Transform mTargetTr;
+	protected Vector3 mGndOfs; // Centerからのオフセット 
 	protected Vector3 mTargetPos;
 	protected Vector3 mNextPos;
 	protected Camera mMainCam;
@@ -13,9 +14,13 @@ public class EmBase : MonoBehaviour {
 	public virtual void Awake(){
 		mAg = new MyAgent (gameObject,false);
 		mTargetTr = null;
+		mGndOfs = Vector3.zero;
 		mTargetPos = transform.position;
 		mNextPos = transform.position;
 		mMainCam = Camera.main;
+		if (MyAgent.USE_SEEKER_PATH == false) {
+			mAg.AddNaviLayer("Walkable");
+		}
 	}
 
 	public virtual void Start () {
@@ -23,15 +28,16 @@ public class EmBase : MonoBehaviour {
 
 	public virtual void Update () {
 		if(updateAI()){
+			Vector3 srcPos;
 			Vector3 destPos;
+			srcPos = transform.position+mGndOfs;
 			if(mTargetTr != null){
 				destPos = mTargetTr.position;
 			}else{
 				destPos = mTargetPos;
 			}
-			destPos.y = transform.position.y;
 			if((destPos-transform.position).sqrMagnitude > (1f*1f)){
-				mAg.CalculatePath(transform.position,destPos);
+				mAg.CalculatePath(srcPos,destPos);
 			}
 		}
 		if (mAg.corners.Length > 0) {

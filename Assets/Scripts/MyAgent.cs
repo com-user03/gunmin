@@ -155,12 +155,15 @@ public class MyAgent{
 				}
 				result.corners = path.corners;
 
+				mPosition = result.sttPos;
 				mPathState = result.state;
 				mCorners = result.corners;
 				mCornerPtr = 0;
 				if(mCorners.Length>0){
 					ret = true;
 				}
+			}else{
+				Debug.Log("Warning:can't find path from "+_sttPos+" to "+_tgtPos+":layer:"+layerMask);
 			}
 			mIsSeeking=false;
 		}
