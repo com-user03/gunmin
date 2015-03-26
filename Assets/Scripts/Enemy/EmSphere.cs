@@ -6,6 +6,8 @@ public class EmSphere : EmBase {
 	override public void Awake(){
 		base.Awake ();
 		mGndOfs = new Vector3 (0f, -0.5f, 0f);
+		mTargetPos = transform.position+mGndOfs;
+		mNextPos = transform.position+mGndOfs;
 		if (MyAgent.USE_SEEKER_PATH == false) {
 			mAg.AddNaviLayer("NavLayerBridgeRed");
 			mAg.AddNaviLayer("NavLayerBridgeBlue");

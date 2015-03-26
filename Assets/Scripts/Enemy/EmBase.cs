@@ -37,7 +37,7 @@ public class EmBase : MonoBehaviour {
 				destPos = mTargetPos;
 			}
 			if((destPos-transform.position).sqrMagnitude > (1f*1f)){
-				mAg.CalculatePath(srcPos,destPos);
+				mAg.CalculatePath(srcPos,destPos,onCalculatePathComplete);
 			}
 		}
 		if (mAg.corners.Length > 0) {
@@ -56,10 +56,14 @@ public class EmBase : MonoBehaviour {
 	}
 
 	protected virtual Vector3 updatePosition(Vector3 _nextPos){
-		Vector3 dir = mAg.position - transform.position;
-		dir.y = 0f;
+		Vector3 dir = mAg.position - (transform.position+mGndOfs);
 		gameObject.GetComponent<Rigidbody>().MovePosition (transform.position + dir);
 		mAg.UpdatePosition ();
 		return mAg.position;
 	}
+
+	protected void onCalculatePathComplete(MyAgent.PathCompleteResult _result){
+		Debug.Log ("callback:"+_result.state.ToString());
+	}
+
 }

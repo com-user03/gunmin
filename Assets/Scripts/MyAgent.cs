@@ -6,7 +6,7 @@ using Pathfinding.RVO;
 
 [RequireComponent(typeof(Seeker))]
 public class MyAgent{
-	public const bool USE_SEEKER_PATH = true;
+	public const bool USE_SEEKER_PATH = false;
 	public const float DEF_SPEED = 1.0f;
 
 	public enum TagNameLayer{ // A* TagNameにあわせる 
@@ -24,6 +24,7 @@ public class MyAgent{
 	//------------------------------------------------
 	// NavMeshPathStatus,PathCompleteState の統一用 
 	public enum PathState{
+		None,
 		Complete,
 		Seeking,
 		Partial,
@@ -35,8 +36,8 @@ public class MyAgent{
 		public Vector3 sttPos;
 		public Vector3 tgtPos;
 		public PathCompleteResult(){
-			state = PathState.Error;
-			corners = null;
+			state = PathState.None;
+			corners = new Vector3[0];
 		}
 	}
 	//------------------------------------------------
@@ -46,6 +47,7 @@ public class MyAgent{
 	private AstarPath mAsPath;
 	private Seeker mSeeker;
 	private PathState mPathState;
+	public PathState pathState{ get { return mPathState; } }
 	private bool mIsSeeking;
 
 	private Vector3[] mCorners;
@@ -96,7 +98,7 @@ public class MyAgent{
 		if(_tagClear){
 			SetNaviLayer(0);
 		}
-		mPathState = PathState.Complete;
+		mPathState = PathState.None;
 		mCorners = new Vector3[0];
 		speed = DEF_SPEED;
 		layerMask = 0;
@@ -114,12 +116,28 @@ public class MyAgent{
 		result.tgtPos = _tgtPos;
 		if (_callback == null) {
 			_callback = defOnPathComplete;
+		} else {
+//			Debug.Log("EM");
 		}
 		if (USE_SEEKER_PATH) {
 			mSeeker.StartPath (_sttPos, _tgtPos ,(Path _p)=>{
 				ABPath abp = _p as ABPath;
 				if (abp == null) throw new System.Exception ("This function only handles ABPaths, do not use special path types");
 				
+				if (abp.CompleteState == PathCompleteState.Complete) {
+					//Claim the new path
+					abp.Claim (this);
+					
+					if (abp.vectorPath != null) {
+						result.corners = abp.vectorPath.ToArray ();
+					}
+
+					mPosition = result.sttPos;
+					mPathState = result.state;
+					mCorners = result.corners;
+					mCornerPtr = 0;
+				}
+
 				switch (abp.CompleteState) {
 				case PathCompleteState.Complete:      result.state = PathState.Complete; break;
 				case PathCompleteState.Error:         result.state = PathState.Error;    break;
@@ -128,18 +146,6 @@ public class MyAgent{
 				default:                              result.state = PathState.Error;    break;
 				}
 				
-				//Claim the new path
-				abp.Claim (this);
-				
-				if (abp.vectorPath != null) {
-					result.corners = abp.vectorPath.ToArray ();
-				}
-				if (result.state == PathState.Complete) {
-					mPosition = result.sttPos;
-					mPathState = result.state;
-					mCorners = result.corners;
-					mCornerPtr = 0;
-				}
 				_callback(result);
 				mIsSeeking=false;
 			}, mSeeker.traversableTags.tagsChange);
