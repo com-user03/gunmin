@@ -6,7 +6,7 @@ using Pathfinding.RVO;
 
 [RequireComponent(typeof(Seeker))]
 public class MyAgent{
-	public const bool USE_SEEKER_PATH = false;
+	public const bool USE_SEEKER_PATH = true;
 	public const float DEF_SPEED = 1.0f;
 
 	public enum TagNameLayer{ // A* TagNameにあわせる 
@@ -46,6 +46,7 @@ public class MyAgent{
 
 	private AstarPath mAsPath;
 	private Seeker mSeeker;
+	private Path mPath;
 	private PathState mPathState;
 	public PathState pathState{ get { return mPathState; } }
 	private bool mIsSeeking;
@@ -93,6 +94,7 @@ public class MyAgent{
 			}
 			mSeeker.drawGizmos = false;
 			mAsPath = StageController.instance.astarPath;
+			mPath = null;
 		} else {
 		}
 		if(_tagClear){
@@ -128,8 +130,15 @@ public class MyAgent{
 					//Claim the new path
 					abp.Claim (this);
 					
-					if (abp.vectorPath != null) {
-						result.corners = abp.vectorPath.ToArray ();
+					if (abp.error) {
+						mPath = null;
+						abp.Release (this);
+					}else{
+						mPath = abp;
+					}
+
+					if ((mPath!=null)&&(mPath.vectorPath != null)) {
+						result.corners = mPath.vectorPath.ToArray ();
 					}
 
 					mPosition = result.sttPos;

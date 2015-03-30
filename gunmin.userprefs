@@ -1,19 +1,15 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\MyAgent.cs">
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\unity5\samples\hexBattle\Assets\_lib\scripts\TmMesh.cs">
     <Files>
-      <File FileName="Assets\Scripts\MyAgent.cs" Line="120" Column="3" />
-      <File FileName="Assets\Scripts\Enemy\EmBase.cs" Line="66" Column="52" />
-      <File FileName="Assets\Scripts\Enemy\EmSphere.cs" Line="16" Column="1" />
-      <File FileName="Assets\Scripts\Npc\NpcBase.cs" Line="220" Column="1" />
+      <File FileName="..\..\..\unity5\samples\hexBattle\Assets\_lib\Editor\CreateTube.cs" Line="23" Column="39" />
+      <File FileName="..\..\..\unity5\samples\hexBattle\Assets\_lib\Editor\CreatePoly.cs" Line="25" Column="1" />
+      <File FileName="..\..\..\unity5\samples\hexBattle\Assets\_lib\scripts\TmMesh.cs" Line="238" Column="1" />
+      <File FileName="..\..\..\unity5\samples\hexBattle\Assets\scripts\BoadBase.cs" Line="51" Column="43" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\Enemy\EmBase.cs" line="66" />
-      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\MyAgent.cs" line="132" />
-      <Breakpoint file="D:\prog\unity\GitHubWork\gunminWEB\gunmin\Assets\Scripts\MyAgent.cs" line="135" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>
